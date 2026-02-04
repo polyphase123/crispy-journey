@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -332,16 +333,21 @@
                 </p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <div class="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200">
-                    <button onclick="switchTab('bill')" id="btn-bill" class="tab-btn active">Itemized Bill</button>
-                    <button onclick="switchTab('analytics')" id="btn-analytics" class="tab-btn text-slate-500">Analytics
-                        & Comparison</button>
+                <div class="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                    <button onclick="switchTab('bill')" id="btn-bill" class="tab-btn active">Coop Bill</button>
+                    <button onclick="switchTab('analytics-coop')" id="btn-analytics-coop"
+                        class="tab-btn text-slate-500">Coop Analytics</button>
+                    <div class="w-px h-6 bg-slate-200 self-center mx-1"></div>
+                    <button onclick="switchTab('meralco')" id="btn-meralco" class="tab-btn text-slate-500">Meralco
+                        Bill</button>
+                    <button onclick="switchTab('analytics-meralco')" id="btn-analytics-meralco"
+                        class="tab-btn text-slate-500">Meralco Analytics</button>
                 </div>
                 <!-- Print Button Removed -->
             </div>
         </div>
 
-        <!-- TAB 1: BILLING SIMULATOR -->
+        <!-- TAB: COOP BILLING SIMULATOR -->
         <div id="tab-bill-content" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <div class="lg:col-span-3 space-y-4 no-print">
                 <div class="card p-5 bg-slate-50/50">
@@ -716,6 +722,13 @@
                                             class="table-input" oninput="calculateBill()"></td>
                                     <td id="li-fit-amt">0.00</td>
                                 </tr>
+                                <tr>
+                                    <td>GEA - All (Green Energy)</td>
+                                    <td id="li-gea-base">--</td>
+                                    <td><input type="number" id="rate-gea" value="0.0371" step="0.0001"
+                                            class="table-input" oninput="calculateBill()"></td>
+                                    <td id="li-gea-amt">0.00</td>
+                                </tr>
 
                                 <!-- Others -->
                                 <tr class="section-header-row">
@@ -761,8 +774,331 @@
             </div>
         </div>
 
+        <!-- TAB: MERALCO BILLING SIMULATOR -->
+        <div id="tab-meralco-content" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div class="lg:col-span-3 space-y-4 no-print">
+                <div class="card p-5 bg-orange-50/50 border-orange-100">
+                    <h2 class="text-[10px] font-black text-orange-900 mb-4 uppercase tracking-widest">Meralco Parameters
+                    </h2>
+                    <div class="space-y-3">
+                        <div class="input-group">
+                            <label>Customer Class</label>
+                            <select id="meralco-class" class="w-full p-2 border rounded-md text-xs font-bold"
+                                onchange="calculateMeralcoBill()">
+                                <option value="residential">Residential</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Solar PV Capacity (kWp)</label>
+                            <input type="number" id="m-derCapacity" value="5" step="0.1"
+                                oninput="calculateMeralcoBill()">
+                        </div>
+                        <div class="input-group">
+                            <label>Solar Capacity Factor (%)</label>
+                            <input type="number" id="m-cf" value="18" step="0.1" oninput="calculateMeralcoBill()">
+                        </div>
+                        <div class="input-group">
+                            <label>Grid Import (kWh)</label>
+                            <input type="number" id="m-import" value="1075" oninput="calculateMeralcoBill()">
+                        </div>
+                        <div class="input-group">
+                            <label>Solar Export (kWh)</label>
+                            <input type="number" id="m-export" value="431" oninput="calculateMeralcoBill()">
+                        </div>
+                        <div class="input-group">
+                            <label>LGU Franchise Tax (%)</label>
+                            <input type="number" id="m-lft-rate" value="0.6270" step="0.0001"
+                                oninput="calculateMeralcoBill()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-5 bg-slate-900 text-white shadow-lg">
+                    <p class="text-[10px] font-black uppercase opacity-60 tracking-widest">Total Amount Due</p>
+                    <h2 class="text-3xl font-black tracking-tighter" id="m-total-due">₱ 0.00</h2>
+                    <div class="mt-4 pt-4 border-t border-white/10">
+                        <p class="text-[9px] font-bold uppercase text-orange-400">MERALCO NM Layout</p>
+                        <p class="text-[8px] font-bold uppercase opacity-50">Effective Jan 2026 Rates</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-9 space-y-6">
+                <!-- Meralco Styled Bill -->
+                <div class="card bg-white p-0 overflow-hidden border-slate-300 shadow-xl">
+                    <div class="bg-white p-6 border-b border-slate-200">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center text-white font-black text-xl italic">
+                                    M</div>
+                                <div>
+                                    <h2 class="text-lg font-black text-slate-900 uppercase">Meralco Net-Metering</h2>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Bill
+                                        Simulation • Jan 2026 Rates</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span
+                                    class="bg-orange-100 text-orange-700 text-[10px] font-black px-3 py-1 rounded-full uppercase">Net-Metering
+                                    Service</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-0">
+                        <table class="meralco-table w-full">
+                            <thead>
+                                <tr class="bg-slate-50">
+                                    <th class="p-4 text-left">Rate Components</th>
+                                    <th class="p-4 text-center">Base</th>
+                                    <th class="p-4 text-center">Price</th>
+                                    <th class="p-4 text-right">Amount (PhP)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Generation -->
+                                <tr class="section-header-row">
+                                    <td class="p-3">Generation <span id="m-gen-pct"
+                                            class="text-[10px] font-medium ml-2 opacity-60 text-white"></span></td>
+                                    <td colspan="2"></td>
+                                    <td class="p-3 text-right" id="m-gen-total">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2">Generation Charge (PhP/kWh)</td>
+                                    <td class="text-center" id="m-gen-base">--</td>
+                                    <td class="text-center"><input type="number" id="m-rate-gen" value="7.7471"
+                                            step="0.0001" class="table-input w-24 text-center"
+                                            oninput="calculateMeralcoBill()"></td>
+                                    <td class="text-right" id="m-gen-amt">0.00</td>
+                                </tr>
+
+                                <!-- Transmission -->
+                                <tr class="section-header-row">
+                                    <td class="p-3">Transmission <span id="m-trans-pct"
+                                            class="text-[10px] font-medium ml-2 opacity-60 text-white"></span></td>
+                                    <td colspan="2"></td>
+                                    <td class="p-3 text-right" id="m-trans-total">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2">Transmission Charge (PhP/kWh)</td>
+                                    <td class="text-center" id="m-trans-base">--</td>
+                                    <td class="text-center"><input type="number" id="m-rate-trans" value="1.0568"
+                                            step="0.0001" class="table-input w-24 text-center"
+                                            oninput="calculateMeralcoBill()"></td>
+                                    <td class="text-right" id="m-trans-amt">0.00</td>
+                                </tr>
+
+                                <!-- System Loss -->
+                                <tr class="section-header-row">
+                                    <td class="p-3">System Loss <span id="m-sl-pct"
+                                            class="text-[10px] font-medium ml-2 opacity-60 text-white"></span></td>
+                                    <td colspan="2"></td>
+                                    <td class="p-3 text-right" id="m-sl-total">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2">System Loss Charge (PhP/kWh)</td>
+                                    <td class="text-center" id="m-sl-base">--</td>
+                                    <td class="text-center"><input type="number" id="m-rate-sl" value="0.6932"
+                                            step="0.0001" class="table-input w-24 text-center"
+                                            oninput="calculateMeralcoBill()"></td>
+                                    <td class="text-right" id="m-sl-amt">0.00</td>
+                                </tr>
+
+                                <!-- Distribution -->
+                                <tr class="section-header-row">
+                                    <td class="p-3">Distribution (Meralco) <span id="m-dist-pct"
+                                            class="text-[10px] font-medium ml-2 opacity-60 text-white"></span></td>
+                                    <td colspan="2"></td>
+                                    <td class="p-3 text-right" id="m-dist-total">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2">Distribution Charge (PhP/kWh)</td>
+                                    <td class="text-center" id="m-dist-base">--</td>
+                                    <td class="text-center" id="m-dist-price">--</td>
+                                    <td class="text-right" id="m-dist-amt">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2 font-bold text-[10px] uppercase">Metering Charge</td>
+                                    <td colspan="3"></td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-12 py-1">Fixed Metering Charge (PhP/mo)</td>
+                                    <td class="text-center">1.00 mo</td>
+                                    <td class="text-center"><input type="number" id="m-rate-metering-fix" value="5.0000"
+                                            step="0.0001" class="table-input w-24 text-center"
+                                            oninput="calculateMeralcoBill()"></td>
+                                    <td class="text-right">5.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-12 py-1">Metering Charge per kWh</td>
+                                    <td class="text-center" id="m-meter-base">--</td>
+                                    <td class="text-center"><input type="number" id="m-rate-metering-kwh" value="0.3350"
+                                            step="0.0001" class="table-input w-24 text-center"
+                                            oninput="calculateMeralcoBill()"></td>
+                                    <td class="text-right" id="m-meter-amt">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2 font-bold text-[10px] uppercase">Supply Charge</td>
+                                    <td colspan="3"></td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-12 py-1">Fixed Supply Charge (PhP/mo)</td>
+                                    <td class="text-center">1.00 mo</td>
+                                    <td class="text-center"><input type="number" id="m-rate-supply-fix" value="16.3800"
+                                            step="0.0001" class="table-input w-24 text-center"
+                                            oninput="calculateMeralcoBill()"></td>
+                                    <td class="text-right">16.38</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-12 py-1">Supply Charge per kWh</td>
+                                    <td class="text-center" id="m-supply-base">--</td>
+                                    <td class="text-center"><input type="number" id="m-rate-supply-kwh" value="0.4979"
+                                            step="0.0001" class="table-input w-24 text-center"
+                                            oninput="calculateMeralcoBill()"></td>
+                                    <td class="text-right" id="m-supply-amt">0.00</td>
+                                </tr>
+
+                                <!-- Subsidies -->
+                                <tr class="section-header-row">
+                                    <td class="p-3">Subsidies <span id="m-subs-pct"
+                                            class="text-[10px] font-medium ml-2 opacity-60 text-white"></span></td>
+                                    <td colspan="2"></td>
+                                    <td class="p-3 text-right" id="m-subs-total">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2">Lifeline Rate Subsidy</td>
+                                    <td class="text-center" id="m-life-base">--</td>
+                                    <td class="text-center"><input type="number" id="m-rate-life" value="0.0008"
+                                            step="0.0001" class="table-input w-24 text-center"
+                                            oninput="calculateMeralcoBill()"></td>
+                                    <td class="text-right" id="m-life-amt">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2">Senior Citizen Subsidy</td>
+                                    <td class="text-center" id="m-senior-base">--</td>
+                                    <td class="text-center"><input type="number" id="m-rate-senior" value="0.0001"
+                                            step="0.0001" class="table-input w-24 text-center"
+                                            oninput="calculateMeralcoBill()"></td>
+                                    <td class="text-right" id="m-senior-amt">0.00</td>
+                                </tr>
+
+                                <!-- Government Taxes -->
+                                <tr class="section-header-row">
+                                    <td class="p-3">Government Taxes <span id="m-tax-pct"
+                                            class="text-[10px] font-medium ml-2 opacity-60 text-white"></span></td>
+                                    <td colspan="2"></td>
+                                    <td class="p-3 text-right" id="m-tax-total">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2 text-[10px] font-bold uppercase">Value Added Tax</td>
+                                    <td class="text-center" id="m-vat-base">--</td>
+                                    <td class="text-center" id="m-vat-price">--</td>
+                                    <td class="text-right" id="m-vat-amt">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2">Current RPT (PhP/kWh)</td>
+                                    <td class="text-center" id="m-rpt-base">--</td>
+                                    <td class="text-center"><input type="number" id="m-rate-rpt" value="0.0028"
+                                            step="0.0001" class="table-input w-24 text-center"
+                                            oninput="calculateMeralcoBill()"></td>
+                                    <td class="text-right" id="m-rpt-amt">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2">Local Franchise Tax</td>
+                                    <td class="text-center" id="m-lft-base">--</td>
+                                    <td class="text-center"><input type="number" id="m-rate-lft" value="0.6270"
+                                            step="0.0001" class="table-input w-24 text-center"
+                                            oninput="calculateMeralcoBill()">%</td>
+                                    <td class="text-right" id="m-lft-amt">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2">Energy Tax</td>
+                                    <td class="text-center" id="m-etax-base">--</td>
+                                    <td class="text-center text-[10px]">Tiered</td>
+                                    <td class="text-right" id="m-etax-amt">0.00</td>
+                                </tr>
+
+                                <!-- Universal Charges -->
+                                <tr class="section-header-row">
+                                    <td class="p-3">Universal Charges <span id="m-uc-pct"
+                                            class="text-[10px] font-medium ml-2 opacity-60 text-white"></span></td>
+                                    <td colspan="2"></td>
+                                    <td class="p-3 text-right" id="m-uc-total">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2">Missionary Elec (SPUG/REDCI)</td>
+                                    <td class="text-center" id="m-ucme-base">--</td>
+                                    <td class="text-center">0.1993</td>
+                                    <td class="text-right" id="m-ucme-amt">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2">Environmental Fund</td>
+                                    <td class="text-center" id="m-uce-base">--</td>
+                                    <td class="text-center">0.0025</td>
+                                    <td class="text-right" id="m-uce-amt">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2">NPC Stranded Debts</td>
+                                    <td class="text-center" id="m-ucsd-base">--</td>
+                                    <td class="text-center">0.0428</td>
+                                    <td class="text-right" id="m-ucsd-amt">0.00</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="pl-8 py-2">FiT-All (Renewable)</td>
+                                    <td class="text-center" id="m-fit-base">--</td>
+                                    <td class="text-center"><input type="number" id="m-rate-fit" value="0.2073"
+                                            step="0.0001" class="table-input w-24 text-center"
+                                            oninput="calculateMeralcoBill()"></td>
+                                    <td class="text-right" id="m-fit-amt">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8 py-2">GEA-All (Green Energy)</td>
+                                    <td class="text-center" id="m-gea-base">--</td>
+                                    <td class="text-center"><input type="number" id="m-rate-gea" value="0.0371"
+                                            step="0.0001" class="table-input w-24 text-center"
+                                            oninput="calculateMeralcoBill()"></td>
+                                    <td class="text-right" id="m-gea-amt">0.00</td>
+                                </tr>
+
+                                <!-- Net Metering Export -->
+                                <tr class="export-row-standard">
+                                    <td class="p-4 font-black uppercase italic">Net Metering Export Energy</td>
+                                    <td class="text-center font-bold" id="m-exp-base">--</td>
+                                    <td class="text-center font-bold" id="m-exp-price">-7.7471</td>
+                                    <td class="text-right font-black text-xl" id="m-exp-amt">- 0.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="bg-slate-900 p-8 text-white flex justify-between items-center">
+                        <div class="space-y-4">
+                            <div class="text-left">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total
+                                    Energy Amount</p>
+                                <p class="text-2xl font-black text-white" id="m-gross-total">₱ 0.00</p>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">Export
+                                    Credit Applied</p>
+                                <p class="text-2xl font-black text-emerald-400" id="m-export-credit">- ₱ 0.00</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-1">Net Amount
+                                Payable</p>
+                            <p class="text-6xl font-black tracking-tighter text-white" id="m-final-total">₱ 0.00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- TAB 2: ANALYTICS & COMPARISON -->
-        <div id="tab-analytics-content" class="hidden space-y-6">
+        <!-- TAB: ANALYTICS & COMPARISON (COOP) -->
+        <div id="tab-analytics-coop-content" class="hidden space-y-6">
             <!-- ROI PANEL -->
             <div class="card p-8 border-t-4 border-blue-600">
                 <div class="flex flex-col md:flex-row justify-between gap-8">
@@ -931,6 +1267,179 @@
             </div>
         </div>
 
+        <!-- TAB: ANALYTICS & COMPARISON (MERALCO) -->
+        <div id="tab-analytics-meralco-content" class="hidden space-y-6">
+            <!-- ROI PANEL -->
+            <div class="card p-8 border-t-4 border-orange-600">
+                <div class="flex flex-col md:flex-row justify-between gap-8">
+                    <div class="md:w-1/3 space-y-6">
+                        <h3 class="text-xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                            <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                </path>
+                            </svg>
+                            Meralco ROI Calculator
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="input-group">
+                                <label>Investment per kWp (PhP)</label>
+                                <input type="number" id="m-roi-cost-kw" value="30000" oninput="calculateMeralcoBill()"
+                                    class="input-premium">
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                <p class="text-[10px] font-black text-slate-400 uppercase">Total Estimated CAPEX</p>
+                                <p class="text-xl font-black text-slate-900" id="m-roi-total-capex">₱ 0.00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div
+                            class="p-6 bg-orange-600 text-white rounded-3xl shadow-xl shadow-orange-100 flex flex-col justify-center">
+                            <p class="text-[10px] font-black uppercase opacity-60 mb-2">Monthly Cash Flow Benefit</p>
+                            <p class="text-4xl font-black" id="m-roi-monthly-savings">₱ 0.00</p>
+                            <p class="text-[10px] mt-4 opacity-80 font-medium">Monthly Savings vs Traditional Meralco
+                                Billing.</p>
+                        </div>
+                        <div
+                            class="p-6 bg-orange-50 border border-orange-100 rounded-3xl flex flex-col justify-center text-center">
+                            <p class="text-[10px] font-black text-orange-600 uppercase mb-2 tracking-[0.2em]">Simple
+                                Payback Period</p>
+                            <p class="text-5xl font-black text-orange-900"><span id="m-roi-payback-val">0.0</span> <span
+                                    class="text-sm font-bold uppercase text-orange-600">Years</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMPARISON PANEL -->
+            <div class="card p-8 border-t-4 border-slate-900">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-xl font-black text-slate-900 uppercase tracking-tight">Meralco Scenario Comparison
+                        Dashboard
+                    </h3>
+                    <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex items-center gap-3">
+                        <label class="text-[10px] font-black text-slate-400 uppercase">Fixed Monthly Fee
+                            (Developer):</label>
+                        <input type="number" id="m-ppa-rate" value="5000" step="100" oninput="calculateMeralcoBill()"
+                            class="w-20 px-2 py-1 bg-white border border-blue-200 rounded text-xs font-bold text-blue-900 outline-none">
+                        <span class="text-[10px] font-bold text-slate-400">PHP/mo</span>
+                    </div>
+                </div>
+
+                <div id="m-ranking-summary"
+                    class="mb-8 p-6 bg-slate-900 rounded-3xl text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-8 opacity-10">
+                        <svg class="w-24 h-24 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col md:flex-row md:items-center gap-6 relative z-10">
+                        <div class="p-4 bg-orange-500 rounded-2xl shadow-xl shadow-orange-500/20 w-fit">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-black uppercase tracking-[0.3em] text-orange-400 mb-2">Meralco
+                                Expert Analysis</h4>
+                            <p id="m-best-scenario-text" class="text-lg font-black tracking-tight leading-tight">
+                                Analyzing
+                                meralco rates and your solar profile...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Scenario 1: Traditional -->
+                    <div class="p-6 rounded-3xl border border-slate-100 bg-white relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M10 2a8 8 0 100 16 8 8 0 000-16zM5 9a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div id="m-rank-badge-a"
+                            class="absolute top-4 left-4 px-3 py-1 bg-slate-100 text-[10px] font-black rounded-full uppercase tracking-widest z-10 border border-slate-200">
+                            RANK #--</div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">A. Traditional
+                            Meralco</p>
+                        <p class="text-4xl font-black text-slate-900 mb-6" id="m-comp-trad">₱ 0.00</p>
+                        <div class="space-y-3 pt-6 border-t border-slate-50">
+                            <div class="flex justify-between text-[11px] font-bold">
+                                <span class="text-slate-400 uppercase">Utility Pymt</span>
+                                <span class="text-slate-700" id="m-comp-trad-util">₱ 0.00</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] font-bold">
+                                <span class="text-slate-400 uppercase">Solar Pymt</span>
+                                <span class="text-slate-300">N/A</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scenario 2: DER Exporting -->
+                    <div
+                        class="p-6 rounded-3xl border border-orange-100 bg-orange-50/50 relative overflow-hidden shadow-lg shadow-orange-50 ring-2 ring-orange-500 ring-offset-2">
+                        <div class="absolute top-0 right-0 p-4 opacity-10">
+                            <svg class="w-12 h-12 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM5.884 6.607a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zm9.9 0a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM3 11a1 1 0 100-2H2a1 1 0 100 2h1zm15 0a1 1 0 100-2h-1a1 1 0 100 2h1zM5.05 15.05a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm9.9 0a1 1 0 010 1.414l-.707.707a1 1 0-1.414-1.414l.707-.707a1 1 0 010 1.414zM10 11a1 1 0 100-2 1 1 0 000 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div id="m-rank-badge-b"
+                            class="absolute top-4 left-4 px-3 py-1 bg-orange-500 text-white text-[10px] font-black rounded-full uppercase tracking-widest z-10">
+                            RANK #--</div>
+                        <p class="text-[10px] font-black text-orange-600 uppercase mb-4 tracking-widest">B.
+                            Net-Metering Meralco</p>
+                        <p class="text-4xl font-black text-orange-900 mb-6" id="m-comp-der-exp">₱ 0.00</p>
+                        <div class="space-y-3 pt-6 border-t border-orange-100">
+                            <div class="flex justify-between text-[11px] font-bold">
+                                <span class="text-orange-600 uppercase opacity-60">Utility Pymt</span>
+                                <span class="text-orange-900" id="m-comp-der-exp-util">₱ 0.00</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] font-bold">
+                                <span class="text-orange-600 uppercase opacity-60">Solar Pymt</span>
+                                <span class="text-orange-900">₱ 0.00 (Self-Owned)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scenario 3: DER Non-Exporting PPA -->
+                    <div class="p-6 rounded-3xl border border-blue-100 bg-blue-50/50 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10">
+                            <svg class="w-12 h-12 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6h10v6H6v-6z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div id="m-rank-badge-c"
+                            class="absolute top-4 left-4 px-3 py-1 bg-blue-500 text-white text-[10px] font-black rounded-full uppercase tracking-widest z-10">
+                            RANK #--</div>
+                        <p class="text-[10px] font-black text-blue-600 uppercase mb-4 tracking-widest">C. Non-Exporting
+                            (PPA)</p>
+                        <p class="text-4xl font-black text-blue-900 mb-6" id="m-comp-der-ppa">₱ 0.00</p>
+                        <div class="space-y-3 pt-6 border-t border-blue-100">
+                            <div class="flex justify-between text-[11px] font-bold">
+                                <span class="text-blue-600 uppercase opacity-60">Utility Pymt</span>
+                                <span class="text-blue-900" id="m-comp-der-ppa-util">₱ 0.00</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] font-bold">
+                                <span class="text-blue-600 uppercase opacity-60">Developer Pymt</span>
+                                <span class="text-blue-900 font-black" id="m-comp-der-ppa-contract">₱ 0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
     </div>
 
@@ -940,22 +1449,31 @@
 
         function switchTab(view) {
             const bill = document.getElementById('tab-bill-content');
-            const flow = document.getElementById('tab-flow-content');
-            const analytics = document.getElementById('tab-analytics-content');
+            const meralco = document.getElementById('tab-meralco-content');
+            const analyticsCoop = document.getElementById('tab-analytics-coop-content');
+            const analyticsMeralco = document.getElementById('tab-analytics-meralco-content');
+
             const buttons = {
                 'bill': document.getElementById('btn-bill'),
-                'analytics': document.getElementById('btn-analytics')
+                'meralco': document.getElementById('btn-meralco'),
+                'analytics-coop': document.getElementById('btn-analytics-coop'),
+                'analytics-meralco': document.getElementById('btn-analytics-meralco')
             };
 
             if (bill) bill.classList.toggle('hidden', view !== 'bill');
-            if (flow) flow.classList.add('hidden'); // Removed tab
-            if (analytics) analytics.classList.toggle('hidden', view !== 'analytics');
+            if (meralco) meralco.classList.toggle('hidden', view !== 'meralco');
+            if (analyticsCoop) analyticsCoop.classList.toggle('hidden', view !== 'analytics-coop');
+            if (analyticsMeralco) analyticsMeralco.classList.toggle('hidden', view !== 'analytics-meralco');
 
             Object.keys(buttons).forEach(key => {
                 if (buttons[key]) {
                     buttons[key].className = (key === view) ? "tab-btn active" : "tab-btn text-slate-500";
                 }
             });
+
+            // Re-calculate when switching to ensure UI is fresh
+            calculateBill();
+            calculateMeralcoBill();
         }
 
         function validateAndCalculate() {
@@ -971,11 +1489,15 @@
                 if (warn) warn.classList.add('hidden');
             }
             calculateBill();
+            calculateMeralcoBill();
         }
 
         function calculateBill() {
             // Helper to get rate from input
-            const getR = (id) => parseFloat(document.getElementById(id).value) || 0;
+            const getR = (id) => {
+                const el = document.getElementById(id);
+                return el ? parseFloat(el.value) || 0 : 0;
+            };
 
             // Updated Rates (Fetched from UI inputs)
             const rates = {
@@ -1009,7 +1531,8 @@
                 ucSpug: getR('rate-uc-spug'),
                 ucRedci: getR('rate-uc-redci'),
                 ucEnv: getR('rate-uc-env'),
-                fit: getR('rate-fit')
+                fit: getR('rate-fit'),
+                gea: getR('rate-gea')
             };
 
             // Update display for fixed charges
@@ -1074,7 +1597,8 @@
             const ucRedciAmt = importKwh * rates.ucRedci;
             const ucEnvAmt = importKwh * rates.ucEnv;
             const fitAmt = actualConsumption * rates.fit;
-            const ucSubtotal = ucSdAmt + ucSpugAmt + ucRedciAmt + ucEnvAmt + fitAmt;
+            const geaAmt = actualConsumption * rates.gea;
+            const ucSubtotal = ucSdAmt + ucSpugAmt + ucRedciAmt + ucEnvAmt + fitAmt + geaAmt;
 
             const grossTotal = genTransSubtotal + distSubtotal + subsSubtotal + taxSubtotal + vatSubtotal + ucSubtotal;
 
@@ -1089,7 +1613,7 @@
             const tradSubs = actualConsumption * (rates.life + rates.senior);
             const tradTax = (tradVolume * (rates.lftEnergy + rates.busTax + rates.rpt)) + (demandKw * rates.lftDemand) + rates.lftFix;
             const tradVat = (tradVolume * (rates.genVat + rates.transVat + rates.slVat + rates.distVatKwh)) + rates.distVatFix + (actualConsumption * rates.subsVat);
-            const tradUc = (tradVolume * (rates.ucSd + rates.ucSpug + rates.ucRedci + rates.ucEnv)) + (actualConsumption * rates.fit);
+            const tradUc = (tradVolume * (rates.ucSd + rates.ucSpug + rates.ucRedci + rates.ucEnv)) + (actualConsumption * (rates.fit + rates.gea));
             const traditionalTotal = tradGenTrans + tradDist + tradSubs + tradTax + tradVat + tradUc;
 
             // UI Updates
@@ -1107,10 +1631,12 @@
 
             setUI('sideTotal', "₱ " + formatNumber(payableAmount));
             if (rolloverCredit > 0) {
-                document.getElementById('rollover-box').classList.remove('hidden');
+                const rollBox = document.getElementById('rollover-box');
+                if (rollBox) rollBox.classList.remove('hidden');
                 setUI('sideRollover', "₱ " + formatNumber(rolloverCredit));
             } else {
-                document.getElementById('rollover-box').classList.add('hidden');
+                const rollBox = document.getElementById('rollover-box');
+                if (rollBox) rollBox.classList.add('hidden');
             }
             setUI('tierDisp', "NM");
 
@@ -1155,6 +1681,7 @@
             setUI('li-uc-redci-base', importKwh.toLocaleString() + " kWh"); setUI('li-uc-redci-amt', formatNumber(ucRedciAmt));
             setUI('li-uc-env-base', importKwh.toLocaleString() + " kWh"); setUI('li-uc-env-amt', formatNumber(ucEnvAmt));
             setUI('li-fit-base', Math.round(actualConsumption).toLocaleString() + " kWh"); setUI('li-fit-amt', formatNumber(fitAmt));
+            setUI('li-gea-base', Math.round(actualConsumption).toLocaleString() + " kWh"); setUI('li-gea-amt', formatNumber(geaAmt));
 
             setUI('li-export-base', exportKwh.toLocaleString() + " kWh"); setUI('li-export-price', exportPrice.toFixed(4)); setUI('det-der-credit', "- " + formatNumber(derCredit));
             setUI('footer-total', "₱ " + formatNumber(payableAmount));
@@ -1198,7 +1725,7 @@
             });
 
             const best = scenarios[0];
-            const secondBest = scenarios[1];
+            const secondaryBest = scenarios[1];
             const monthlySavingsVsTrad = traditionalTotal - best.cost;
 
             let resultMsg = "";
@@ -1206,14 +1733,263 @@
                 resultMsg = "Surprisingly, the Traditional Grid is currently the most cost-effective option based on your current rates.";
             } else {
                 resultMsg = `The <span class="text-emerald-400">${best.name}</span> is your best financial choice, saving you <span class="text-emerald-400">₱${formatNumber(monthlySavingsVsTrad)}/mo</span> compared to the grid.`;
-                if (best.id === 'B' && scenarios[2].id === 'A') {
-                    // B is best, A is worst
-                }
             }
-            document.getElementById('best-scenario-text').innerHTML = resultMsg;
+            const bestMsgEl = document.getElementById('best-scenario-text');
+            if (bestMsgEl) bestMsgEl.innerHTML = resultMsg;
         }
 
-        window.onload = calculateBill;
+        function calculateMeralcoBill() {
+            const mDerCapacity = parseFloat(document.getElementById('m-derCapacity').value) || 0;
+            const mCf = parseFloat(document.getElementById('m-cf').value) || 0;
+            const mImport = parseFloat(document.getElementById('m-import').value) || 0;
+            const mExport = parseFloat(document.getElementById('m-export').value) || 0;
+
+            const mSolarGen = mDerCapacity * 24 * 30 * (mCf / 100);
+            const mActualConsumption = mImport - mExport + mSolarGen;
+
+            // 1. Generation
+            const genPrice = parseFloat(document.getElementById('m-rate-gen').value) || 0;
+            const genAmt = mImport * genPrice;
+
+            // 2. Transmission
+            const transPrice = parseFloat(document.getElementById('m-rate-trans').value) || 0;
+            const transAmt = mImport * transPrice;
+
+            // 3. System Loss
+            const slPrice = parseFloat(document.getElementById('m-rate-sl').value) || 0;
+            const slAmt = mImport * slPrice;
+
+            // 4. Distribution (Residential Tiered)
+            let distPrice = 0;
+            if (mImport <= 200) distPrice = 0.9803;
+            else if (mImport <= 300) distPrice = 1.2908;
+            else if (mImport <= 400) distPrice = 1.5837;
+            else distPrice = 2.0941;
+
+            const distAmt = mImport * distPrice;
+            const meterAmt = (mImport * (parseFloat(document.getElementById('m-rate-metering-kwh').value) || 0)) + (parseFloat(document.getElementById('m-rate-metering-fix').value) || 0);
+            const supplyAmt = (mImport * (parseFloat(document.getElementById('m-rate-supply-kwh').value) || 0)) + (parseFloat(document.getElementById('m-rate-supply-fix').value) || 0);
+            const distTotal = distAmt + meterAmt + supplyAmt;
+
+            // 5. Subsidies
+            const lifePrice = parseFloat(document.getElementById('m-rate-life').value) || 0;
+            const seniorPrice = parseFloat(document.getElementById('m-rate-senior').value) || 0;
+            const lifeAmt = mActualConsumption * lifePrice;
+            const seniorAmt = mActualConsumption * seniorPrice;
+            const subsTotal = lifeAmt + seniorAmt;
+
+            // 6. Government Taxes
+            // VAT Calculation
+            const genVat = genAmt * 0.1131;
+            const transVat = transAmt * 0.1028;
+            const slVat = slAmt * 0.1110;
+            const othersVat = (distTotal + subsTotal) * 0.12;
+            const vatTotal = genVat + transVat + slVat + othersVat;
+
+            const rptPrice = parseFloat(document.getElementById('m-rate-rpt').value) || 0;
+            const rptAmt = mImport * rptPrice;
+            const lftRateVal = (parseFloat(document.getElementById('m-rate-lft').value) || 0) / 100;
+            const lftAmt = (genAmt + transAmt + slAmt + distTotal + subsTotal) * lftRateVal;
+
+            // Energy Tax (Residential)
+            let etaxAmt = 0;
+            if (mImport > 650) {
+                const next350 = Math.min(mImport - 650, 350);
+                etaxAmt += next350 * 0.10;
+                if (mImport > 1000) {
+                    const next500 = Math.min(mImport - 1000, 500);
+                    etaxAmt += next500 * 0.20;
+                    if (mImport > 1500) {
+                        const excess = mImport - 1500;
+                        etaxAmt += excess * 0.35;
+                    }
+                }
+            }
+            const taxTotal = vatTotal + rptAmt + lftAmt + etaxAmt;
+
+            // 7. Universal Charges
+            const ucmeAmt = mImport * (0.1949 + 0.0044);
+            const uceAmt = mImport * 0.0025;
+            const ucsdAmt = mImport * 0.0428;
+            const ucTotal = ucmeAmt + uceAmt + ucsdAmt;
+
+            // 8. FiT-All & GEA-All
+            const fitPrice = parseFloat(document.getElementById('m-rate-fit').value) || 0;
+            const geaPrice = parseFloat(document.getElementById('m-rate-gea').value) || 0;
+            const fitAmt = mActualConsumption * fitPrice;
+            const geaAmt = mActualConsumption * geaPrice;
+
+            const mGrossTotal = genAmt + transAmt + slAmt + distTotal + subsTotal + taxTotal + ucTotal + fitAmt + geaAmt;
+
+            const mExportPrice = genPrice;
+            const mExportCredit = mExport * mExportPrice;
+            const mFinalTotal = Math.max(0, mGrossTotal - mExportCredit);
+
+            // Update UI
+            setUI('m-gen-total', formatNumber(genAmt));
+            setUI('m-gen-base', mImport.toLocaleString() + " kWh");
+            setUI('m-gen-amt', formatNumber(genAmt));
+
+            setUI('m-trans-total', formatNumber(transAmt));
+            setUI('m-trans-base', mImport.toLocaleString() + " kWh");
+            setUI('m-trans-amt', formatNumber(transAmt));
+
+            setUI('m-sl-total', formatNumber(slAmt));
+            setUI('m-sl-base', mImport.toLocaleString() + " kWh");
+            setUI('m-sl-amt', formatNumber(slAmt));
+
+            setUI('m-dist-total', formatNumber(distTotal));
+            setUI('m-dist-base', mImport.toLocaleString() + " kWh");
+            setUI('m-dist-price', distPrice.toFixed(4));
+            setUI('m-dist-amt', formatNumber(distAmt));
+            setUI('m-meter-base', mImport.toLocaleString() + " kWh");
+            setUI('m-meter-amt', formatNumber(mImport * 0.3350));
+            setUI('m-supply-base', mImport.toLocaleString() + " kWh");
+            setUI('m-supply-amt', formatNumber(mImport * 0.4979));
+
+            setUI('m-subs-total', formatNumber(subsTotal));
+            setUI('m-life-base', Math.round(mActualConsumption).toLocaleString() + " kWh");
+            setUI('m-life-amt', formatNumber(lifeAmt));
+            setUI('m-senior-base', Math.round(mActualConsumption).toLocaleString() + " kWh");
+            setUI('m-senior-amt', formatNumber(seniorAmt));
+
+            setUI('m-tax-total', formatNumber(taxTotal));
+            setUI('m-vat-base', mImport.toLocaleString() + " kWh");
+            setUI('m-vat-amt', formatNumber(vatTotal));
+            setUI('m-rpt-base', mImport.toLocaleString() + " kWh");
+            setUI('m-rpt-amt', formatNumber(rptAmt));
+            setUI('m-lft-base', mImport.toLocaleString() + " kWh");
+            setUI('m-lft-amt', formatNumber(lftAmt));
+            setUI('m-etax-base', mImport.toLocaleString() + " kWh");
+            setUI('m-etax-amt', formatNumber(etaxAmt));
+
+            setUI('m-uc-total', formatNumber(ucTotal));
+            setUI('m-ucme-base', mImport.toLocaleString() + " kWh");
+            setUI('m-ucme-amt', formatNumber(ucmeAmt));
+            setUI('m-uce-base', mImport.toLocaleString() + " kWh");
+            setUI('m-uce-amt', formatNumber(uceAmt));
+            setUI('m-ucsd-base', mImport.toLocaleString() + " kWh");
+            setUI('m-ucsd-amt', formatNumber(ucsdAmt));
+
+            setUI('m-fit-total', formatNumber(fitAmt + geaAmt));
+            setUI('m-fit-base', Math.round(mActualConsumption).toLocaleString() + " kWh");
+            setUI('m-fit-amt', formatNumber(fitAmt));
+            setUI('m-gea-base', Math.round(mActualConsumption).toLocaleString() + " kWh");
+            setUI('m-gea-amt', formatNumber(geaAmt));
+
+            setUI('m-exp-base', mExport.toLocaleString() + " kWh");
+            setUI('m-exp-amt', "- " + formatNumber(mExportCredit));
+
+            setUI('m-total-due', "₱ " + formatNumber(mFinalTotal));
+            setUI('m-gross-total', "₱ " + formatNumber(mGrossTotal));
+            setUI('m-export-credit', "- ₱ " + formatNumber(mExportCredit));
+            setUI('m-final-total', "₱ " + formatNumber(mFinalTotal));
+
+            // Meralco Analytics & ROI Calculation
+            const mRoiCost = parseFloat(document.getElementById('m-roi-cost-kw').value) || 0;
+            const mCapexTotal = mDerCapacity * mRoiCost;
+            setUI('m-roi-total-capex', "₱ " + formatNumber(mCapexTotal));
+
+            // Traditional Meralco Calculation (Simplified for ROI)
+            const tradImport = mActualConsumption;
+            const tradGen = tradImport * genPrice;
+            const tradTrans = tradImport * transPrice;
+            const tradSL = tradImport * slPrice;
+
+            let tradDistPrice = 0;
+            if (tradImport <= 200) tradDistPrice = 0.9803;
+            else if (tradImport <= 300) tradDistPrice = 1.2908;
+            else if (tradImport <= 400) tradDistPrice = 1.5837;
+            else tradDistPrice = 2.0941;
+
+            const tradDistAmt = (tradImport * tradDistPrice) +
+                (tradImport * (parseFloat(document.getElementById('m-rate-metering-kwh').value) || 0)) + (parseFloat(document.getElementById('m-rate-metering-fix').value) || 0) +
+                (tradImport * (parseFloat(document.getElementById('m-rate-supply-kwh').value) || 0)) + (parseFloat(document.getElementById('m-rate-supply-fix').value) || 0);
+
+            const tradSubs = tradImport * (lifePrice + seniorPrice);
+
+            // Taxes
+            const tradVAT = (tradGen * 0.1131) + (tradTrans * 0.1028) + (tradSL * 0.1110) + (tradDistAmt + tradSubs) * 0.12;
+            const tradRPT = tradImport * rptPrice;
+            const tradLFT = (tradGen + tradTrans + tradSL + tradDistAmt + tradSubs) * lftRateVal;
+
+            let tradETax = 0;
+            if (tradImport > 650) {
+                const next350 = Math.min(tradImport - 650, 350);
+                tradETax += next350 * 0.10;
+                if (tradImport > 1000) {
+                    const next500 = Math.min(tradImport - 1000, 500);
+                    tradETax += next500 * 0.20;
+                    if (tradImport > 1500) tradETax += (tradImport - 1500) * 0.35;
+                }
+            }
+
+            const tradUC = tradImport * (0.1993 + 0.0025 + 0.0428);
+            const tradFitGea = tradImport * (fitPrice + geaPrice);
+
+            const mTraditionalTotal = tradGen + tradTrans + tradSL + tradDistAmt + tradSubs + tradVAT + tradRPT + tradLFT + tradETax + tradUC + tradFitGea;
+
+            const mMonthlySavings = mTraditionalTotal - mFinalTotal;
+            setUI('m-roi-monthly-savings', "₱ " + formatNumber(mMonthlySavings));
+            setUI('m-roi-payback-val', (mMonthlySavings > 0) ? (mCapexTotal / (mMonthlySavings * 12)).toFixed(1) : "0.0");
+
+            // Scenario Comparison
+            const mPpaRate = parseFloat(document.getElementById('m-ppa-rate').value) || 0;
+            const mPpaTotal = mGrossTotal + mPpaRate;
+
+            setUI('m-comp-trad', "₱ " + formatNumber(mTraditionalTotal));
+            setUI('m-comp-trad-util', "₱ " + formatNumber(mTraditionalTotal));
+            setUI('m-comp-der-exp', "₱ " + formatNumber(mFinalTotal));
+            setUI('m-comp-der-exp-util', "₱ " + formatNumber(mFinalTotal));
+            setUI('m-comp-der-ppa', "₱ " + formatNumber(mPpaTotal));
+            setUI('m-comp-der-ppa-util', "₱ " + formatNumber(mGrossTotal));
+            setUI('m-comp-der-ppa-contract', "₱ " + formatNumber(mPpaRate));
+
+            // Meralco Ranking
+            const mScenarios = [
+                { id: 'A', name: 'Traditional Meralco', cost: mTraditionalTotal, badge: 'm-rank-badge-a' },
+                { id: 'B', name: 'Net-Metering Meralco', cost: mFinalTotal, badge: 'm-rank-badge-b' },
+                { id: 'C', name: 'Non-Exporting (PPA)', cost: mPpaTotal, badge: 'm-rank-badge-c' }
+            ];
+
+            mScenarios.sort((a, b) => a.cost - b.cost);
+            mScenarios.forEach((s, index) => {
+                const rank = index + 1;
+                const badgeEl = document.getElementById(s.badge);
+                if (badgeEl) {
+                    badgeEl.innerText = `RANK #${rank}`;
+                    if (rank === 1) badgeEl.classList.add('ring-4', 'ring-orange-500/20');
+                    else badgeEl.classList.remove('ring-4', 'ring-orange-500/20');
+                }
+            });
+
+            const mBest = mScenarios[0];
+            const mSavingsVsTrad = mTraditionalTotal - mBest.cost;
+            let mResultMsg = (mBest.id === 'A') ?
+                "The Traditional Meralco rate is currently your best option." :
+                `The <span class="text-orange-400">${mBest.name}</span> is your best financial choice, saving you <span class="text-orange-400">₱${formatNumber(mSavingsVsTrad)}/mo</span>.`;
+
+            const mBestMsgEl = document.getElementById('m-best-scenario-text');
+            if (mBestMsgEl) mBestMsgEl.innerHTML = mResultMsg;
+
+            // Percentages for Headers
+            const total = mGrossTotal;
+            if (total > 0) {
+                setUI('m-gen-pct', ((genAmt / total) * 100).toFixed(2) + "%");
+                setUI('m-trans-pct', ((transAmt / total) * 100).toFixed(2) + "%");
+                setUI('m-sl-pct', ((slAmt / total) * 100).toFixed(2) + "%");
+                setUI('m-dist-pct', ((distTotal / total) * 100).toFixed(2) + "%");
+                setUI('m-subs-pct', ((subsTotal / total) * 100).toFixed(2) + "%");
+                setUI('m-tax-pct', ((taxTotal / total) * 100).toFixed(2) + "%");
+                setUI('m-uc-pct', ((ucTotal / total) * 100).toFixed(2) + "%");
+                setUI('m-fit-pct', (((fitAmt + geaAmt) / total) * 100).toFixed(2) + "%");
+            }
+        }
+
+        window.onload = () => {
+            calculateBill();
+            calculateMeralcoBill();
+        };
     </script>
 </body>
 
