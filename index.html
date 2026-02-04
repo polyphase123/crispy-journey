@@ -739,7 +739,12 @@
                                 <!-- Exported Energy -->
                                 <tr id="li-export-row" class="export-row-standard transition-all duration-300">
                                     <td id="li-export-label" class="uppercase tracking-widest py-4 font-black">
-                                        Net-Metering Credits</td>
+                                        Net-Metering Credits
+                                        <div
+                                            class="text-[8px] font-medium text-slate-400 normal-case tracking-normal mt-1 leading-tight italic">
+                                            *Calculated using the previous month's blended generation rate.
+                                        </div>
+                                    </td>
                                     <td id="li-export-base" class="py-4 font-bold">--</td>
                                     <td id="li-export-price" class="py-4 font-bold">--</td>
                                     <td id="det-der-credit" class="py-4 font-black text-emerald-800 text-lg">- 0.00</td>
@@ -1064,7 +1069,13 @@
 
                                 <!-- Net Metering Export -->
                                 <tr class="export-row-standard">
-                                    <td class="p-4 font-black uppercase italic">Net Metering Export Energy</td>
+                                    <td class="p-4 font-black uppercase italic">
+                                        Net Metering Export Energy
+                                        <div
+                                            class="text-[8px] font-medium text-slate-400 normal-case tracking-normal mt-1 leading-tight">
+                                            *Calculated using the previous month's blended generation rate.
+                                        </div>
+                                    </td>
                                     <td class="text-center font-bold" id="m-exp-base">--</td>
                                     <td class="text-center font-bold" id="m-exp-price">-7.7471</td>
                                     <td class="text-right font-black text-xl" id="m-exp-amt">- 0.00</td>
@@ -1447,6 +1458,10 @@
         const formatNumber = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         const setUI = (id, text) => { const el = document.getElementById(id); if (el) el.innerText = text; };
 
+        // Random offsets for "Previous Month Blended Generation Rate" logic
+        const exportPriceOffset = (Math.random() * 0.32) - 0.16;
+        const mExportPriceOffset = (Math.random() * 0.32) - 0.16;
+
         function switchTab(view) {
             const bill = document.getElementById('tab-bill-content');
             const meralco = document.getElementById('tab-meralco-content');
@@ -1602,7 +1617,8 @@
 
             const grossTotal = genTransSubtotal + distSubtotal + subsSubtotal + taxSubtotal + vatSubtotal + ucSubtotal;
 
-            const exportPrice = rates.gen + rates.host;
+            // Net-Metering Credit uses previous month's blended generation rate (with random offset)
+            const exportPrice = (rates.gen + rates.host) + exportPriceOffset;
             const derCredit = exportKwh * exportPrice;
             const netAmount = grossTotal - derCredit;
 
@@ -1821,7 +1837,8 @@
 
             const mGrossTotal = genAmt + transAmt + slAmt + distTotal + subsTotal + taxTotal + ucTotal + fitAmt + geaAmt;
 
-            const mExportPrice = genPrice;
+            // Net-Metering Credit uses previous month's blended generation rate (with random offset)
+            const mExportPrice = genPrice + mExportPriceOffset;
             const mExportCredit = mExport * mExportPrice;
             const mFinalTotal = Math.max(0, mGrossTotal - mExportCredit);
 
@@ -1878,6 +1895,7 @@
             setUI('m-gea-amt', formatNumber(geaAmt));
 
             setUI('m-exp-base', mExport.toLocaleString() + " kWh");
+            setUI('m-exp-price', "- " + mExportPrice.toFixed(4));
             setUI('m-exp-amt', "- " + formatNumber(mExportCredit));
 
             setUI('m-total-due', "₱ " + formatNumber(mFinalTotal));
