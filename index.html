@@ -60,7 +60,8 @@
                         <div class="input-group"><label>Solar PV Capacity (kWp)</label><input type="number" id="m-derCapacity" value="5" step="0.1" oninput="updateMeralcoMaxExport()"></div>
                         <div class="input-group"><label>Solar Capacity Factor (%)</label><input type="number" id="m-cf" value="18" step="0.1" oninput="updateMeralcoMaxExport()"></div>
                         <div class="input-group"><label>Grid Import (kWh)</label><input type="number" id="m-import" value="1075" oninput="calculateMeralcoBill()"></div>
-                        <div class="input-group"><label>Solar Export (kWh)</label><input type="number" id="m-export" value="431" oninput="calculateMeralcoBill()"><p id="m-export-warn" class="text-[9px] text-red-500 font-bold mt-1 hidden">⚠️ Exceeds max generation!</p></div>
+                        <div class="input-group"><label>Solar Export (kWh)</label><input type="number" id="m-export" value="431" oninput="calculateMeralcoBill()"><p id="m-export-warn" class="text-[9px] text-red-500 font-bold mt-1 hidden">⚠️ Exceeds REC Meter!</p></div>
+                        <div class="input-group"><label>REC Meter (Total Gen.) (kWh)</label><input type="number" id="m-rec" value="489" oninput="calculateMeralcoBill()"><p id="m-rec-note" class="text-[9px] text-blue-600 font-bold mt-1 hidden">✨ Theoretical Maximum Generation</p></div>
                         <div class="input-group"><label>LGU Franchise Tax (%)</label><input type="number" id="m-lft-rate" value="0.6270" step="0.0001" oninput="calculateMeralcoBill()"></div>
                     </div>
                 </div>
@@ -68,6 +69,17 @@
             </div>
             <div class="lg:col-span-9 space-y-6">
                 <!-- Comprehensive Meralco Table -->
+                <div class="card overflow-hidden">
+                    <div class="bg-slate-50 border-b border-slate-100 p-4"><h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Monthly Energy Balance (kWh)</h3></div>
+                    <div class="p-4 overflow-x-auto text-[11px]">
+                        <table class="w-full text-left">
+                            <tr class="border-b"><td class="py-2 font-medium">Import from Meralco</td><td class="py-2 text-right font-black text-red-600" id="m-bal-imp">0</td></tr>
+                            <tr class="border-b"><td class="py-2 font-medium">Export to Meralco</td><td class="py-2 text-right font-black text-red-600" id="m-bal-exp">- 0</td></tr>
+                            <tr class="border-b"><td class="py-2 font-medium">REC Meter (Total Generation)</td><td class="py-2 text-right font-black text-red-600" id="m-bal-rec">0</td></tr>
+                            <tr class="bg-slate-50"><td class="py-2 font-black text-emerald-600 uppercase">Subsidies Base (Combined)</td><td class="py-2 text-right font-black text-emerald-600" id="m-bal-sub">0 kWh</td></tr>
+                        </table>
+                    </div>
+                </div>
                 <div class="card overflow-hidden">
                     <div class="p-4 overflow-x-auto text-[10px]">
                         <table class="meralco-table w-full"><thead><tr><th class="text-left">Rate Components</th><th>Base</th><th>Price</th><th>Amount (PhP)</th></tr></thead>
@@ -98,12 +110,12 @@
                             <tr><td class="pl-4">Current RPT Charge</td><td id="m-rpt-base">--</td><td><input type="number" id="m-rate-rpt" value="0.0059" class="table-input" oninput="calculateMeralcoBill()"></td><td id="m-rpt-amt">0.00</td></tr>
                             
                             <tr class="section-header-row"><td colspan="3">Universal Charges & Others</td><td id="m-uc-total">0.00</td></tr>
-                            <tr><td class="pl-4">UC - Missionary Elect (SPUG)</td><td id="m-uc-spug-base">--</td><td>0.2692</td><td id="m-uc-spug-amt">0.00</td></tr>
-                            <tr><td class="pl-4">UC - Missionary Elect (RED-CI)</td><td id="m-uc-red-base">--</td><td>0.0101</td><td id="m-uc-red-amt">0.00</td></tr>
-                            <tr><td class="pl-4">UC - Environmental Charge</td><td id="m-uc-ec-base">--</td><td>0.0025</td><td id="m-uc-ec-amt">0.00</td></tr>
-                            <tr><td class="pl-4">UC - Stranded Debts</td><td id="m-uc-sd-base">--</td><td>0.0428</td><td id="m-uc-sd-amt">0.00</td></tr>
-                            <tr><td class="pl-4">FiT-All (Renewable)</td><td id="m-fit-base">--</td><td>0.2011</td><td id="m-fit-amt">0.00</td></tr>
-                            <tr><td class="pl-4">GEA-All (Renewable)</td><td id="m-gea-base">--</td><td>0.0371</td><td id="m-gea-amt">0.00</td></tr>
+                            <tr><td class="pl-4">UC - Missionary Elect (SPUG)</td><td id="m-uc-spug-base">--</td><td><input type="number" id="m-rate-uc-spug" value="0.2692" step="0.0001" class="table-input" oninput="calculateMeralcoBill()"></td><td id="m-uc-spug-amt">0.00</td></tr>
+                            <tr><td class="pl-4">UC - Missionary Elect (RED-CI)</td><td id="m-uc-red-base">--</td><td><input type="number" id="m-rate-uc-red" value="0.0101" step="0.0001" class="table-input" oninput="calculateMeralcoBill()"></td><td id="m-uc-red-amt">0.00</td></tr>
+                            <tr><td class="pl-4">UC - Environmental Charge</td><td id="m-uc-ec-base">--</td><td><input type="number" id="m-rate-uc-ec" value="0.0025" step="0.0001" class="table-input" oninput="calculateMeralcoBill()"></td><td id="m-uc-ec-amt">0.00</td></tr>
+                            <tr><td class="pl-4">UC - Stranded Debts</td><td id="m-uc-sd-base">--</td><td><input type="number" id="m-rate-uc-sd" value="0.0428" step="0.0001" class="table-input" oninput="calculateMeralcoBill()"></td><td id="m-uc-sd-amt">0.00</td></tr>
+                            <tr><td class="pl-4">FiT-All (Renewable)</td><td id="m-fit-base">--</td><td><input type="number" id="m-rate-fit" value="0.2011" step="0.0001" class="table-input" oninput="calculateMeralcoBill()"></td><td id="m-fit-amt">0.00</td></tr>
+                            <tr><td class="pl-4">GEA-All (Renewable)</td><td id="m-gea-base">--</td><td><input type="number" id="m-rate-gea" value="0.0371" step="0.0001" class="table-input" oninput="calculateMeralcoBill()"></td><td id="m-gea-amt">0.00</td></tr>
 
                             <tr class="section-header-row"><td colspan="3">Taxes & Credits</td><td id="m-tax-total-cell">0.00</td></tr>
                             <tr><td class="pl-4">Energy Tax (Tiered)</td><td id="m-etax-base">--</td><td id="m-etax-price">Tiered</td><td id="m-etax-amt">0.00</td></tr>
@@ -127,7 +139,10 @@
                         </h3>
                         <div class="space-y-4">
                             <div class="input-group"><label>Investment per kWp (PhP)</label><input type="number" id="m-roi-cost-kw" value="30000" oninput="calculateMeralcoBill()" class="input-premium"></div>
-                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100"><p class="text-[10px] font-black text-slate-400 uppercase">Total Estimated CAPEX</p><p class="text-xl font-black text-slate-900" id="m-roi-total-capex">₱ 0.00</p></div>
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                <p class="text-[10px] font-black text-slate-400 uppercase">Total Project Cost</p>
+                                <p class="text-xl font-black text-slate-900" id="m-roi-total-capex">₱ 0.00</p>
+                            </div>
                         </div>
                     </div>
                     <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -137,45 +152,97 @@
                 </div>
             </div>
             <div class="card p-8 border-t-4 border-slate-900">
-                <div class="flex justify-between items-center mb-8"><h3 class="text-xl font-black text-slate-900 uppercase tracking-tight">Meralco Scenario Comparison Dashboard</h3><div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex items-center gap-3"><label class="text-[10px] font-black text-slate-400 uppercase">Fixed Monthly Fee:</label><input type="number" id="m-ppa-rate" value="5000" step="100" oninput="calculateMeralcoBill()" class="w-20 px-2 py-1 bg-white border border-blue-200 rounded text-xs font-bold text-blue-900 outline-none"><span class="text-[10px] font-bold text-slate-400">PHP/mo</span></div></div>
+                <div class="flex justify-between items-center mb-8"><h3 class="text-xl font-black text-slate-900 uppercase tracking-tight">Meralco Scenario Comparison Dashboard</h3></div>
                 <div id="m-ranking-summary" class="mb-8 p-6 bg-slate-900 rounded-3xl text-white relative overflow-hidden"><div class="absolute top-0 right-0 p-8 opacity-10"><svg class="w-24 h-24 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div><div class="flex flex-col md:flex-row md:items-center gap-6 relative z-10"><div class="p-4 bg-orange-500 rounded-2xl shadow-xl shadow-orange-500/20 w-fit"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div><div><h4 class="text-xs font-black uppercase tracking-[0.3em] text-orange-400 mb-2">Meralco Expert Analysis</h4><p id="m-best-scenario-text" class="text-lg font-black tracking-tight leading-tight">Analyzing meralco rates and your solar profile...</p></div></div></div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="p-6 rounded-3xl border border-slate-100 bg-white relative overflow-hidden group"><div id="m-rank-badge-a" class="absolute top-4 left-4 px-3 py-1 bg-slate-100 text-[10px] font-black rounded-full uppercase tracking-widest z-10 border border-slate-200">RANK #--</div><p class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest mt-8">A. Traditional Meralco</p><p class="text-4xl font-black text-slate-900 mb-6" id="m-comp-trad">₱ 0.00</p></div>
                     <div class="p-6 rounded-3xl border border-orange-100 bg-orange-50/50 relative overflow-hidden shadow-lg shadow-orange-50 ring-2 ring-orange-500 ring-offset-2"><div id="m-rank-badge-b" class="absolute top-4 left-4 px-3 py-1 bg-orange-500 text-white text-[10px] font-black rounded-full uppercase tracking-widest z-10">RANK #--</div><p class="text-[10px] font-black text-orange-600 uppercase mb-4 tracking-widest mt-8">B. Net-Metering Meralco</p><p class="text-4xl font-black text-orange-900 mb-6" id="m-comp-der-exp">₱ 0.00</p></div>
-                    <div class="p-6 rounded-3xl border border-blue-100 bg-blue-50/50 relative overflow-hidden shadow-lg shadow-blue-50"><div id="m-rank-badge-c" class="absolute top-4 left-4 px-3 py-1 bg-blue-500 text-white text-[10px] font-black rounded-full uppercase tracking-widest z-10">RANK #--</div><p class="text-[10px] font-black text-blue-600 uppercase mb-4 tracking-widest mt-8">C. Non-Exporting (PPA)</p><p class="text-4xl font-black text-blue-900 mb-6" id="m-comp-der-ppa">₱ 0.00</p></div>
                 </div>
             </div>
+
+            <div class="card p-8 border-t-4 border-emerald-600 bg-emerald-50/20">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="p-4 bg-emerald-500 rounded-3xl text-white shadow-lg">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2 2 2 0 012 2v.65m2.875-6.326A11.3 11.3 0 0119 11a3 3 0 01-3-3V6a3 3 0 01-3-3 7 7 0 014.007 1.154zM12 21a9 9 0 110-18 9 9 0 010 18z"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black text-emerald-900 uppercase tracking-widest">Sustainability Dashboard</h3>
+                            <p class="text-[10px] font-bold text-emerald-600 uppercase">Environmental Impact Metrics</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 max-w-2xl w-full">
+                        <div class="p-4 bg-white rounded-2xl border border-emerald-100 flex items-center justify-between">
+                            <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">CO2 Mitigated (Annual)</p><p class="text-xl font-black text-slate-900" id="m-env-co2">0.00 MT</p></div>
+                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">TONS</span>
+                        </div>
+                        <div class="p-4 bg-white rounded-2xl border border-emerald-100 flex items-center justify-between">
+                            <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Tree Equivalency</p><p class="text-xl font-black text-slate-900" id="m-env-trees">0</p></div>
+                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">TREES</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
 
         <!-- TAB: COOP BILL (EXACT FROM SCRATCH.HTML) -->
         <div id="tab-bill-content" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <div class="lg:col-span-3 space-y-4 no-print">
-                <div class="card p-5 bg-slate-50/50"><h2 class="text-[10px] font-black text-slate-900 mb-4 uppercase tracking-widest">Input Parameters</h2><div class="space-y-3">
+                <div class="card p-5 bg-orange-50/50 border-orange-100"><h2 class="text-[10px] font-black text-orange-900 mb-4 uppercase tracking-widest text-center">BATELEC II PARAMETERS</h2><div class="space-y-3">
+                    <div class="input-group"><label>Customer Class</label><select id="coop-class" onchange="handleCoopClassChange()"><option value="residential">Residential</option><option value="low-voltage">Low Voltage Connection</option><option value="higher-voltage">Higher Voltage Connection</option></select></div>
+                    <div class="input-group hidden" id="c-demand-group"><label>Billed Demand (kW)</label><input type="number" id="c-demand" value="40" oninput="calculateBill()"></div>
                     <div class="input-group"><label>Solar PV Capacity (kWp)</label><input type="number" id="derCapacityKWp" value="5" oninput="updateCoopMaxExport()"></div>
                     <div class="input-group"><label>Solar Capacity Factor (%)</label><input type="number" id="capacityFactor" value="18" step="0.1" oninput="updateCoopMaxExport()"></div>
                     <div class="input-group"><label>Grid Import (kWh)</label><input type="number" id="importKwh" value="329" oninput="calculateBill()"></div>
-                    <div class="input-group"><label>Solar Export (kWh)</label><input type="number" id="exportKwh" value="731" oninput="calculateBill()"><p id="c-export-warn" class="text-[9px] text-red-500 font-bold mt-1 hidden">⚠️ Exceeds generation!</p></div>
+                    <div class="input-group"><label>Solar Export (kWh)</label><input type="number" id="exportKwh" value="731" oninput="calculateBill()"><p id="c-export-warn" class="text-[9px] text-red-500 font-bold mt-1 hidden">⚠️ Exceeds REC Meter!</p></div>
+                    <div class="input-group"><label>REC Meter (Total Gen.) (kWh)</label><input type="number" id="c-rec" value="1000" oninput="calculateBill()"><p id="c-rec-note" class="text-[9px] text-blue-600 font-bold mt-1 hidden">✨ Theoretical Maximum Generation</p></div>
                 </div></div>
                 <div class="card p-5 bg-slate-900 text-white shadow-lg"><p class="text-[10px] font-black uppercase opacity-60">Amount Payable</p><h2 class="text-3xl font-black tracking-tighter" id="sideTotal">₱ 0.00</h2></div>
             </div>
             <div class="lg:col-span-9 space-y-6">
-                <div class="actual-kwh-highlight" id="actual-cons-box"><div class="flex justify-between items-start mb-3"><h3 class="text-xs font-black text-blue-900 uppercase tracking-widest">Monthly Energy Balance (kWh)</h3><span class="text-[9px] font-black bg-blue-600 text-white px-2 py-0.5 rounded uppercase">Net-Metering Summary</span></div><p class="text-3xl font-black text-blue-900" id="math-actual">0 kWh</p></div>
+                <div class="card overflow-hidden">
+                    <div class="bg-slate-50 border-b border-slate-100 p-4"><h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Monthly Energy Balance (kWh)</h3></div>
+                    <div class="p-4 overflow-x-auto text-[11px]">
+                        <table class="w-full text-left">
+                            <tr class="border-b"><td class="py-2 font-medium">Import from Grid</td><td class="py-2 text-right font-black text-emerald-600" id="c-bal-imp">0</td></tr>
+                            <tr class="border-b"><td class="py-2 font-medium">Export to Grid</td><td class="py-2 text-right font-black text-red-600" id="c-bal-exp">- 0</td></tr>
+                            <tr class="border-b"><td class="py-2 font-medium">REC Meter (Total Generation)</td><td class="py-2 text-right font-black text-blue-600" id="c-bal-rec">0</td></tr>
+                            <tr class="bg-slate-50"><td class="py-2 font-black text-emerald-600 uppercase">Subsidies Base (Combined)</td><td class="py-2 text-right font-black text-emerald-600" id="c-bal-sub">0 kWh</td></tr>
+                        </table>
+                    </div>
+                </div>
                 <div class="card overflow-hidden"><div class="bg-slate-50 border-b border-slate-100 p-8 flex justify-between items-center"><h2 class="text-base font-black text-slate-800 uppercase tracking-tight">Statement Details</h2></div><div class="p-2 overflow-x-auto"><table class="meralco-table w-full"><thead><tr><th class="text-left">Description</th><th>Base</th><th>Price</th><th>Amount (PhP)</th></tr></thead>
                     <tbody>
-                        <tr class="section-header-row"><td colspan="3">Generation & Transmission</td><td id="det-gen-trans-total">0.00</td></tr>
-                        <tr><td>Generation System Charge</td><td id="li-gen-base">--</td><td><input type="number" id="rate-gen" value="5.8118" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="li-gen-amt">0.00</td></tr>
-                        <tr><td>Benefits to Host Communities</td><td id="li-host-base">--</td><td><input type="number" id="rate-host" value="0.0282" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="li-host-amt">0.00</td></tr>
-                        <tr><td>Transmission System Charge</td><td id="li-trans-base">--</td><td><input type="number" id="rate-trans" value="1.3561" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="li-trans-amt">0.00</td></tr>
-                        <tr><td>System Loss Charge</td><td id="li-sl-base">--</td><td><input type="number" id="rate-sl" value="0.7319" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="li-sl-amt">0.00</td></tr>
-                        <tr class="section-header-row"><td colspan="3">Distribution</td><td id="det-dist-total">0.00</td></tr>
-                        <tr><td>Distribution System Charge</td><td id="li-dist-energy-base">--</td><td><input type="number" id="rate-dist-energy" value="0.4613" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="li-dist-energy-amt">0.00</td></tr>
-                        <tr><td>Supply Fix Charge</td><td>1.00 mo</td><td><input type="number" id="rate-supply-fix" value="25.00" class="table-input" oninput="calculateBill()"></td><td id="disp-supply-fix">25.00</td></tr>
-                        <tr><td>Metering Fix Charge</td><td>1.00 mo</td><td><input type="number" id="rate-metering-fix" value="5.00" class="table-input" oninput="calculateBill()"></td><td id="disp-metering-fix">5.00</td></tr>
-                        <tr class="section-header-row"><td colspan="3">Subsidy & Universal Charges</td><td id="det-subs-total">0.00</td></tr>
-                        <tr><td>Lifeline Subsidy (Combined)</td><td id="li-life-base">--</td><td><input type="number" id="rate-life" value="0.0041" class="table-input" oninput="calculateBill()"></td><td id="li-life-amt">0.00</td></tr>
-                        <tr><td>Universal Charges (NPC/ME/ENV/FiT/GEA)</td><td id="li-uc-base">--</td><td><input type="number" id="rate-uc" value="0.5916" class="table-input" oninput="calculateBill()"></td><td id="li-uc-amt">0.00</td></tr>
-                        <tr><td>VAT (12% Mixed)</td><td colspan="2">Mixed</td><td id="det-vat-total">0.00</td></tr>
-                        <tr class="export-row-standard"><td class="py-4 font-black">EXPORT CREDIT</td><td id="li-export-base">--</td><td id="li-export-price">--</td><td id="det-der-credit">0.00</td></tr>
+                        <tr class="section-header-row"><td colspan="3">Generation & Transmission</td><td id="c-gen-trans-total">0.00</td></tr>
+                        <tr><td>Generation System Charge</td><td id="c-gen-base">--</td><td><input type="number" id="c-rate-gen" value="5.2173" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-gen-amt">0.00</td></tr>
+                        <tr><td>Transmission System Charge</td><td id="c-trans-base">--</td><td><input type="number" id="c-rate-trans" value="1.0894" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-trans-amt">0.00</td></tr>
+                        <tr id="c-trans-demand-row" class="hidden"><td>Transmission Demand</td><td id="c-trans-demand-base">--</td><td><input type="number" id="c-rate-trans-dem" value="736.63" step="0.01" class="table-input" oninput="calculateBill()"></td><td id="c-trans-demand-amt">0.00</td></tr>
+                        <tr><td>System Loss Charge</td><td id="c-sl-base">--</td><td><input type="number" id="c-rate-sl" value="0.6894" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-sl-amt">0.00</td></tr>
+                        
+                        <tr class="section-header-row"><td colspan="3">Distribution (BATELEC II)</td><td id="c-dist-total">0.00</td></tr>
+                        <tr><td>Distribution Network Charge</td><td id="c-dist-base">--</td><td><input type="number" id="c-rate-dist" value="0.2748" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-dist-amt">0.00</td></tr>
+                        <tr id="c-dist-demand-row" class="hidden"><td>Dist. Network (Demand)</td><td id="c-dist-dem-base">--</td><td><input type="number" id="c-rate-dist-dem" value="118.55" step="0.01" class="table-input" oninput="calculateBill()"></td><td id="c-dist-dem-amt">0.00</td></tr>
+                        <tr id="c-retail-kwh-row"><td>Retail Elec. Service (kWh)</td><td id="c-retail-kwh-base">--</td><td><input type="number" id="c-rate-retail-kwh" value="0.4140" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-retail-kwh-amt">0.00</td></tr>
+                        <tr id="c-retail-fix-row"><td>Retail Elec. Service (Fixed)</td><td>1.00 mo</td><td><input type="number" id="c-rate-retail-fix" value="59.73" step="0.01" class="table-input" oninput="calculateBill()"></td><td id="c-retail-fix-amt">0.00</td></tr>
+                        <tr id="c-meter-kwh-row"><td>Metering Charge (kWh)</td><td id="c-meter-kwh-base">--</td><td><input type="number" id="c-rate-meter-kwh" value="0.3460" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-meter-kwh-amt">0.00</td></tr>
+                        <tr><td>Metering Charge (Fixed)</td><td>1.00 mo</td><td><input type="number" id="c-rate-meter-fix" value="5.00" step="0.01" class="table-input" oninput="calculateBill()"></td><td id="c-meter-fix-amt">0.00</td></tr>
+                        <tr><td>Reinvestment Fund (CAPEX)</td><td id="c-reinvest-base">--</td><td><input type="number" id="c-rate-reinvest" value="0.3216" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-reinvest-amt">0.00</td></tr>
+
+                        <tr class="section-header-row"><td colspan="3">Adjustments & Subsidies</td><td id="c-adj-total">0.00</td></tr>
+                        <tr><td>Lifeline Rate Subsidy</td><td id="c-life-base">--</td><td><input type="number" id="c-rate-life" value="0.0100" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-life-amt">0.00</td></tr>
+                        <tr><td>Senior Citizen Subsidy</td><td id="c-scs-base">--</td><td><input type="number" id="c-rate-scs" value="0.0001" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-scs-amt">0.00</td></tr>
+
+                        <tr class="section-header-row"><td colspan="3">Universal Charges</td><td id="c-uc-total">0.00</td></tr>
+                        <tr><td>NPC Stranded Debt</td><td id="c-uc-sd-base">--</td><td><input type="number" id="c-rate-uc-sd" value="0.0428" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-uc-sd-amt">0.00</td></tr>
+                        <tr><td>Missionary Electrification</td><td id="c-uc-me-base">--</td><td><input type="number" id="c-rate-uc-me" value="0.2763" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-uc-me-amt">0.00</td></tr>
+                        <tr><td>Environmental Charge</td><td id="c-uc-env-base">--</td><td><input type="number" id="c-rate-uc-env" value="0.0025" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-uc-env-amt">0.00</td></tr>
+                        <tr><td>FiT-All (Renewable)</td><td id="c-fit-base">--</td><td><input type="number" id="c-rate-fit" value="0.2011" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-fit-amt">0.00</td></tr>
+                        <tr><td>GEA-All (Renewable)</td><td id="c-gea-base">--</td><td><input type="number" id="c-rate-gea" value="0.0371" step="0.0001" class="table-input" oninput="calculateBill()"></td><td id="c-gea-amt">0.00</td></tr>
+
+                        <tr class="section-header-row"><td colspan="3">Taxes & Credits</td><td id="c-tax-total">0.00</td></tr>
+                        <tr><td>Value Added Tax (Combined)</td><td colspan="2">Mixed Rates</td><td id="c-vat-amt">0.00</td></tr>
+                        <tr class="export-row-standard"><td class="py-4 font-black">EXPORT CREDIT</td><td id="c-exp-base">--</td><td id="c-exp-price">--</td><td id="c-exp-amt">0.00</td></tr>
                     </tbody></table></div>
                 <div class="bg-slate-900 p-8 text-white grid grid-cols-1 md:grid-cols-2 gap-8 divide-x divide-white/10 text-right"><div class="pr-8 opacity-80"><div class="flex justify-between text-[10px] font-black uppercase"><span>Gross Energy Amount:</span><span id="footer-gross">0.00</span></div><div class="flex justify-between text-[10px] font-black uppercase text-emerald-400"><span>Applied Export Credit:</span><span id="footer-export">- 0.00</span></div></div><div><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Final Net Amount Payable</p><p class="text-5xl font-black tracking-tighter text-white" id="footer-total">₱ 0.00</p></div></div>
                 </div>
@@ -186,29 +253,73 @@
         <div id="tab-analytics-coop-content" class="hidden space-y-6">
             <div class="card p-8 border-t-4 border-blue-600">
                 <div class="flex flex-col md:flex-row justify-between gap-8">
-                    <div class="md:w-1/3 space-y-6"><h3 class="text-xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">ROI Calculator</h3><div class="space-y-4"><div class="input-group"><label>Investment per kWp (PhP)</label><input type="number" id="roi-cost-kw" value="30000" oninput="calculateBill()" class="input-premium"></div><div class="p-4 bg-slate-50 rounded-xl border border-slate-100"><p class="text-[10px] font-black text-slate-400 uppercase">Total Estimated CAPEX</p><p class="text-xl font-black text-slate-900" id="roi-total-capex">₱ 0.00</p></div></div></div>
+                    <div class="md:w-1/3 space-y-6">
+                        <h3 class="text-xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Coop ROI Calculator
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="input-group"><label>Investment per kWp (PhP)</label><input type="number" id="roi-cost-kw" value="30000" oninput="calculateBill()" class="input-premium"></div>
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                <p class="text-[10px] font-black text-slate-400 uppercase">Total Estimated CAPEX</p>
+                                <p class="text-xl font-black text-slate-900" id="roi-total-capex">₱ 0.00</p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-6 bg-blue-600 text-white rounded-3xl shadow-xl shadow-blue-100 flex flex-col justify-center"><p class="text-[10px] font-black uppercase opacity-60 mb-2">Monthly Cash Flow Benefit</p><p class="text-4xl font-black" id="roi-monthly-savings">₱ 0.00</p><p class="text-[10px] mt-4 opacity-80 font-medium">Monthly Savings vs Traditional Grid Billing.</p></div>
+                        <div class="p-6 bg-blue-600 text-white rounded-3xl shadow-xl shadow-blue-100 flex flex-col justify-center text-center md:text-left"><p class="text-[10px] font-black uppercase opacity-60 mb-2">Monthly Cash Flow Benefit</p><p class="text-4xl font-black" id="roi-monthly-savings">₱ 0.00</p><p class="text-[10px] mt-4 opacity-80 font-medium">Monthly credit from solar exports.</p></div>
                         <div class="p-6 bg-emerald-50 border border-emerald-100 rounded-3xl flex flex-col justify-center text-center"><p class="text-[10px] font-black text-emerald-600 uppercase mb-2 tracking-[0.2em]">Simple Payback Period</p><p class="text-5xl font-black text-emerald-900"><span id="roi-payback-val">0.0</span> <span class="text-sm font-bold uppercase text-emerald-600">Years</span></p></div>
                     </div>
                 </div>
             </div>
             <div class="card p-8 border-t-4 border-slate-900">
-                <div class="flex justify-between items-center mb-8"><h3 class="text-xl font-black text-slate-900 uppercase tracking-tight">Scenario Comparison Dashboard</h3><div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex items-center gap-3"><label class="text-[10px] font-black text-slate-400 uppercase">Fixed Monthly Fee:</label><input type="number" id="ppa-rate" value="5000" step="100" oninput="calculateBill()" class="w-20 px-2 py-1 bg-white border border-blue-200 rounded text-xs font-bold text-blue-900 outline-none"><span class="text-[10px] font-bold text-slate-400">PHP/mo</span></div></div>
+                <div class="flex justify-between items-center mb-8"><h3 class="text-xl font-black text-slate-900 uppercase tracking-tight">Scenario Comparison Dashboard</h3></div>
                 <div id="ranking-summary" class="mb-8 p-6 bg-slate-900 rounded-3xl text-white relative overflow-hidden"><div class="absolute top-0 right-0 p-8 opacity-10"><svg class="w-24 h-24 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div><div class="flex flex-col md:flex-row md:items-center gap-6 relative z-10"><div class="p-4 bg-emerald-500 rounded-2xl shadow-xl shadow-emerald-500/20 w-fit"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div><div><h4 class="text-xs font-black uppercase tracking-[0.3em] text-emerald-400 mb-2">Expert Smart Analysis</h4><p id="best-scenario-text" class="text-lg font-black tracking-tight leading-tight">Analyzing market rates and your consumption profile...</p></div></div></div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="p-6 rounded-3xl border border-slate-100 bg-white relative overflow-hidden group"><div id="rank-badge-a" class="absolute top-4 left-4 px-3 py-1 bg-slate-100 text-[10px] font-black rounded-full uppercase tracking-widest z-10 border border-slate-200">RANK #--</div><p class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest mt-8">A. Traditional Grid</p><p class="text-4xl font-black text-slate-900 mb-6" id="comp-trad">₱ 0.00</p></div>
                     <div class="p-6 rounded-3xl border border-emerald-100 bg-emerald-50/50 relative overflow-hidden shadow-lg shadow-emerald-50 ring-2 ring-emerald-500 ring-offset-2"><div id="rank-badge-b" class="absolute top-4 left-4 px-3 py-1 bg-emerald-500 text-white text-[10px] font-black rounded-full uppercase tracking-widest z-10">RANK #--</div><p class="text-[10px] font-black text-emerald-600 uppercase mb-4 tracking-widest mt-8">B. Net-Metering System</p><p class="text-4xl font-black text-emerald-900 mb-6" id="comp-der-exp">₱ 0.00</p></div>
-                    <div class="p-6 rounded-3xl border border-blue-100 bg-blue-50/50 relative overflow-hidden shadow-lg shadow-blue-50"><div id="rank-badge-c" class="absolute top-4 left-4 px-3 py-1 bg-blue-500 text-white text-[10px] font-black rounded-full uppercase tracking-widest z-10">RANK #--</div><p class="text-[10px] font-black text-blue-600 uppercase mb-4 tracking-widest mt-8">C. Non-Exporting (PPA)</p><p class="text-4xl font-black text-blue-900 mb-6" id="comp-der-ppa">₱ 0.00</p></div>
                 </div>
             </div>
+
+            <div class="card p-8 border-t-4 border-emerald-600 bg-emerald-50/20">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="p-4 bg-emerald-500 rounded-3xl text-white shadow-lg">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black text-emerald-900 uppercase tracking-widest">Sustainability Dashboard</h3>
+                            <p class="text-[10px] font-bold text-emerald-600 uppercase">Environmental Impact Metrics</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 max-w-2xl w-full">
+                        <div class="p-4 bg-white rounded-2xl border border-emerald-100 flex items-center justify-between">
+                            <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">CO2 Mitigated (Annual)</p><p class="text-xl font-black text-slate-900" id="c-env-co2">0.00 MT</p></div>
+                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">TONS</span>
+                        </div>
+                        <div class="p-4 bg-white rounded-2xl border border-emerald-100 flex items-center justify-between">
+                            <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Tree Equivalency</p><p class="text-xl font-black text-slate-900" id="c-env-trees">0</p></div>
+                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">TREES</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
     </div>
 
     <script>
         const formatNumber = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         const setUI = (id, text) => { const el = document.getElementById(id); if (el) { if (el.tagName === 'INPUT') el.value = text; else el.innerText = text; } };
-        const mExportPriceOffset = (Math.random() * 0.3) - 0.15;
+        const mExportPriceOffset = 0.12;
+
+        function getAmortization(principal, ratePerYear, years) {
+            if(principal <= 0) return 0;
+            const r = (ratePerYear / 100) / 12;
+            const n = years * 12;
+            if(r === 0) return principal / n;
+            return principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+        }
 
         function switchTab(v) {
             ['bill', 'meralco', 'analytics-coop', 'analytics-meralco'].forEach(t => {
@@ -220,6 +331,18 @@
             if (v.includes('meralco')) calculateMeralcoBill(); else calculateBill();
         }
 
+        function handleMeralcoClassChange() {
+            const m = document.getElementById('meralco-class').value;
+            const r = meralcoRates[m];
+            document.getElementById('m-demand-group').classList.toggle('hidden', !r.hasDemand);
+            
+            // Set default rates to inputs
+            setUI('m-rate-gen', r.gen);
+            setUI('m-rate-sl', r.sl);
+            // ... non-array dist handled in calculate
+            calculateMeralcoBill();
+        }
+
         const meralcoRates = {
             residential: { gen: 8.3864, trans: 1.4567, sl: 0.7752, dist: [{max:200,rate:0.9803},{max:300,rate:1.2908},{max:400,rate:1.5837},{max:Infinity,rate:2.0941}], supplyKwh: 0.4979, supplyFix: 16.38, meteringKwh: 0.3350, meteringFix: 5.0, vatGen: 0.1105, vatTrans: 0.11, vatSl: 0.1104, vatOther: 0.12, hasDemand: false },
             'gs-a': { gen: 8.3864, trans: 1.4567, sl: 0.7752, dist: 0.7313, supplyKwh: 0.4979, supplyFix: 16.38, meteringKwh: 0.3350, meteringFix: 5.0, vatGen: 0.1105, vatTrans: 0.11, vatSl: 0.1104, vatOther: 0.12, hasDemand: false },
@@ -229,10 +352,62 @@
             'gp-34kv': { gen: 8.3864, transDemand: 548.27, sl: 0.3091, distKwh: 0.0502, distDemand: 178.85, supplyKwh: 0, supplyFix: 827.54, meteringKwh: 0, meteringFix: 831.72, vatGen: 0.1105, vatTrans: 0.11, vatSl: 0.1104, vatOther: 0.12, hasDemand: true }
         };
 
+        const coopRates = {
+            residential: { 
+                gen: 5.2173, trans: 1.0894, sl: 0.6894, dist: 0.2748, 
+                retailKwh: 0.4140, meterKwh: 0.3460, meterFix: 5.0,
+                reinvest: 0.3216, life: 0.0100, scs: 0.0001,
+                vatGen: 0.4045, vatTrans: 0.1144, vatSl: 0.0767, vatDist: 0.1242, vatOthers: 0.0012, vatFixed: 0.60,
+                ucSD: 0.0428, ucME: 0.2763, ucEnv: 0.0025, fit: 0.2011, gea: 0.0371, hasDemand: false
+            },
+            'low-voltage': { 
+                gen: 5.2173, trans: 1.0419, sl: 0.6894, dist: 0.3748, 
+                retailFix: 59.73, meterFix: 54.92, 
+                reinvest: 0.3216, life: 0.0100, scs: 0.0001,
+                vatGen: 0.4045, vatTrans: 0.1094, vatSl: 0.0767, vatDist: 0.0450, vatOthers: 0.0012, vatFixed: 13.7580,
+                ucSD: 0.0428, ucME: 0.2763, ucEnv: 0.0025, fit: 0.2011, gea: 0.0371, hasDemand: false
+            },
+            'higher-voltage': { 
+                gen: 5.2173, transDemand: 736.63, sl: 0.6894, distDemand: 118.55, 
+                retailFix: 59.73, meterFix: 54.92, 
+                reinvest: 0.3216, life: 0.0100, scs: 0.0001,
+                vatGen: 0.4045, vatTrans: 0.2447, vatSl: 0.0767, vatDist: 0, vatOthers: 0.0012, vatFixed: 13.7580,
+                ucSD: 0.0428, ucME: 0.2763, ucEnv: 0.0025, fit: 0.2011, gea: 0.0371, hasDemand: true 
+            }
+        };
+
         function handleMeralcoClassChange() {
             const m = document.getElementById('meralco-class').value;
-            document.getElementById('m-demand-group').classList.toggle('hidden', !meralcoRates[m].hasDemand);
+            const r = meralcoRates[m];
+            document.getElementById('m-demand-group').classList.toggle('hidden', !r.hasDemand);
+            setUI('m-rate-gen', r.gen);
+            setUI('m-rate-sl', r.sl);
+            
+            // Adjust labels/display for Demand vs Energy
+            if(r.hasDemand) {
+                document.getElementById('m-trans-label').innerText = "Transmission (kWh)";
+                document.getElementById('m-dist-label').innerText = "Distribution (kWh)";
+            } else {
+                document.getElementById('m-trans-label').innerText = "Transmission System";
+                document.getElementById('m-dist-label').innerText = "Distribution Charge";
+            }
+            
             calculateMeralcoBill();
+        }
+
+        function handleCoopClassChange() {
+            const m = document.getElementById('coop-class').value;
+            const r = coopRates[m];
+            document.getElementById('c-demand-group').classList.toggle('hidden', !r.hasDemand);
+            
+            // Set default rates
+            setUI('c-rate-gen', r.gen); setUI('c-rate-trans', r.trans||0); setUI('c-rate-trans-dem', r.transDemand||0);
+            setUI('c-rate-sl', r.sl); setUI('c-rate-dist', r.dist||0); setUI('c-rate-dist-dem', r.distDemand||0);
+            setUI('c-rate-retail-kwh', r.retailKwh||0); setUI('c-rate-retail-fix', r.retailFix||0);
+            setUI('c-rate-meter-kwh', r.meterKwh||0); setUI('c-rate-meter-fix', r.meterFix||0);
+            setUI('c-rate-reinvest', r.reinvest); setUI('c-rate-life', r.life); setUI('c-rate-scs', r.scs);
+            
+            calculateBill();
         }
 
         function calculateMeralcoBill() {
@@ -242,23 +417,57 @@
             const cf = parseFloat(document.getElementById('m-cf').value)||0;
             const imp = parseFloat(document.getElementById('m-import').value)||0;
             const exp = parseFloat(document.getElementById('m-export').value)||0;
+            const rec = parseFloat(document.getElementById('m-rec').value)||0;
+            const subBase = imp + rec - exp;
+            const totalLoad = imp + rec - exp;
+
             const dem = parseFloat(document.getElementById('m-demand').value)||0;
             const lft = (parseFloat(document.getElementById('m-lft-rate').value)||0)/100;
-            const ppaFixed = parseFloat(document.getElementById('m-ppa-rate').value)||0;
             const sGen = cap * 24 * 30 * (cf/100);
 
-            if(exp > sGen + 0.5) {
+            if(rec >= sGen - 1) document.getElementById('m-rec-note').classList.remove('hidden'); else document.getElementById('m-rec-note').classList.add('hidden');
+
+            if(exp > rec + 0.1) {
                 document.getElementById('m-export-warn').classList.remove('hidden');
-                setUI('m-total-due', "INVALID EXPORT");
-                setUI('m-comp-trad', "ERR"); setUI('m-comp-der-exp', "ERR"); setUI('m-comp-der-ppa', "ERR");
+                setUI('m-total-due', "EXP > REC");
+                setUI('m-comp-trad', "ERR"); setUI('m-comp-der-exp', "ERR");
                 setUI('m-roi-monthly-savings', "₱ 0.00"); setUI('m-roi-payback-val', "ERR");
                 return; // Stop computing
             } else {
                 document.getElementById('m-export-warn').classList.add('hidden');
             }
 
+            function getMeralcoStatement(kwh, demand) {
+                const subB = kwh; // Traditional mode: base is just import
+                const gA = kwh * r.gen;
+                const tA = r.transDemand ? 0 : kwh * r.trans;
+                const tDA = r.transDemand ? demand * r.transDemand : 0;
+                const sA = kwh * r.sl;
+                let dA = 0;
+                if(Array.isArray(r.dist)) { r.dist.forEach((t, i) => { const pm = i===0?0:r.dist[i-1].max; const tk = Math.max(0, Math.min(kwh, t.max) - pm); dA += tk*t.rate; }); }
+                else { dA = kwh * (r.distKwh||r.dist); }
+                const dDA = demand * (r.distDemand||0);
+                const sKA = kwh * r.supplyKwh; const mKA = kwh * r.meteringKwh;
+                const awatA = kwh * (parseFloat(document.getElementById('m-rate-awat').value)||0);
+                const rrA = kwh * (parseFloat(document.getElementById('m-rate-rr').value)||0);
+                const lifeA = subB * (parseFloat(document.getElementById('m-rate-life').value)||0);
+                const scsA = subB * (parseFloat(document.getElementById('m-rate-scs').value)||0);
+                const rptA = kwh * (parseFloat(document.getElementById('m-rate-rpt').value)||0);
+                const ucA = kwh * (0.2692+0.0101+0.0025+0.0428+0.2011+0.0371);
+                let eT = 0; if(kwh > 650) { if(kwh <= 1000) eT = (kwh-650)*0.20; else eT = (350*0.20) + (kwh-1000)*0.35; }
+                const tBase = gA+tA+tDA+sA+dA+dDA+sKA+r.supplyFix+mKA+r.meteringFix+awatA+rrA+lifeA+scsA+rptA;
+                const lfA = tBase * lft;
+                const vG = gA * r.vatGen; const vT = (tA+tDA) * r.vatTrans; const vS = sA * r.vatSl;
+                const vO = (dA+dDA+sKA+r.supplyFix+mKA+r.meteringFix+lifeA+scsA+rptA) * r.vatOther;
+                return gA+tA+tDA+sA+dA+dDA+sKA+r.supplyFix+mKA+r.meteringFix+awatA+rrA+lifeA+scsA+rptA+ucA+eT+lfA+vG+vT+vS+vO;
+            }
+
+            // Get live rates from inputs
+            const gR = parseFloat(document.getElementById('m-rate-gen').value)||r.gen;
+            const slR = parseFloat(document.getElementById('m-rate-sl').value)||r.sl;
+
             // 1. Generation
-            const genAmt = imp * r.gen; 
+            const genAmt = imp * gR; 
             setUI('m-gen-base', imp + " kWh"); setUI('m-gen-amt', formatNumber(genAmt)); setUI('m-gen-total', formatNumber(genAmt));
 
             // 2. Transmission
@@ -275,13 +484,13 @@
             setUI('m-trans-amt', formatNumber(tAmt)); setUI('m-trans-total', formatNumber(tAmt+tDemAmt));
 
             // 3. System Loss
-            const slAmt = imp * r.sl; 
+            const slAmt = imp * slR; 
             setUI('m-sl-base', imp + " kWh"); setUI('m-sl-amt', formatNumber(slAmt)); setUI('m-sl-total', formatNumber(slAmt));
 
             // 4. Distribution
             let dAmt = 0;
             if(Array.isArray(r.dist)) { 
-                let rem = imp; r.dist.forEach((t, i) => { const pm = i===0?0:r.dist[i-1].max; const tk = Math.max(0, Math.min(rem, t.max-pm)); dAmt += tk*t.rate; }); 
+                r.dist.forEach((t, i) => { const pm = i===0?0:r.dist[i-1].max; const tk = Math.max(0, Math.min(imp, t.max) - pm); dAmt += tk*t.rate; }); 
                 setUI('m-dist-price', "Tiered"); setUI('m-dist-base', imp + " kWh");
             } else { 
                 dAmt = imp * (r.distKwh||r.dist); 
@@ -305,23 +514,27 @@
             const scsRate = parseFloat(document.getElementById('m-rate-scs').value)||0;
             const rptRate = parseFloat(document.getElementById('m-rate-rpt').value)||0;
 
-            const awatAmt = imp * awatRate; const rrAmt = imp * rrRate; const lifeAmt = imp * lifeRate; const scsAmt = imp * scsRate; const rptAmt = imp * rptRate;
-            setUI('m-awat-base', imp + " kWh"); setUI('m-awat-amt', formatNumber(awatAmt));
-            setUI('m-rr-base', imp + " kWh"); setUI('m-rr-amt', formatNumber(rrAmt));
-            setUI('m-life-base', imp + " kWh"); setUI('m-life-amt', formatNumber(lifeAmt));
-            setUI('m-scs-base', imp + " kWh"); setUI('m-scs-amt', formatNumber(scsAmt));
+            const awatAmt = imp * awatRate; const rrAmt = imp * rrRate; const lifeAmt = subBase * lifeRate; const scsAmt = subBase * scsRate; const rptAmt = imp * rptRate;
+            setUI('m-life-base', subBase + " kWh"); setUI('m-life-amt', formatNumber(lifeAmt));
+            setUI('m-scs-base', subBase + " kWh"); setUI('m-scs-amt', formatNumber(scsAmt));
             setUI('m-rpt-base', imp + " kWh"); setUI('m-rpt-amt', formatNumber(rptAmt));
             setUI('m-adj-total', formatNumber(awatAmt+rrAmt+lifeAmt+scsAmt+rptAmt));
 
             // 6. Universal Charges
-            const spug = 0.2692; const red = 0.0101; const ec = 0.0025; const sd = 0.0428; const fit = 0.2011; const gea = 0.0371;
-            const ucAmt = imp * (spug+red+ec+sd+fit+gea);
-            setUI('m-uc-spug-base', imp + " kWh"); setUI('m-uc-spug-amt', formatNumber(imp*spug));
-            setUI('m-uc-red-base', imp + " kWh"); setUI('m-uc-red-amt', formatNumber(imp*red));
-            setUI('m-uc-ec-base', imp + " kWh"); setUI('m-uc-ec-amt', formatNumber(imp*ec));
-            setUI('m-uc-sd-base', imp + " kWh"); setUI('m-uc-sd-amt', formatNumber(imp*sd));
-            setUI('m-fit-base', imp + " kWh"); setUI('m-fit-amt', formatNumber(imp*fit));
-            setUI('m-gea-base', imp + " kWh"); setUI('m-gea-amt', formatNumber(imp*gea));
+            const m_spug = parseFloat(document.getElementById('m-rate-uc-spug').value)||0.2692;
+            const m_red = parseFloat(document.getElementById('m-rate-uc-red').value)||0.0101;
+            const m_ec = parseFloat(document.getElementById('m-rate-uc-ec').value)||0.0025;
+            const m_sd = parseFloat(document.getElementById('m-rate-uc-sd').value)||0.0428;
+            const m_fit = parseFloat(document.getElementById('m-rate-fit').value)||0.2011;
+            const m_gea = parseFloat(document.getElementById('m-rate-gea').value)||0.0371;
+
+            const ucAmt = (imp * (m_spug+m_red+m_ec+m_sd)) + (subBase * (m_fit+m_gea));
+            setUI('m-uc-spug-base', imp + " kWh"); setUI('m-uc-spug-amt', formatNumber(imp*m_spug));
+            setUI('m-uc-red-base', imp + " kWh"); setUI('m-uc-red-amt', formatNumber(imp*m_red));
+            setUI('m-uc-ec-base', imp + " kWh"); setUI('m-uc-ec-amt', formatNumber(imp*m_ec));
+            setUI('m-uc-sd-base', imp + " kWh"); setUI('m-uc-sd-amt', formatNumber(imp*m_sd));
+            setUI('m-fit-base', subBase + " kWh"); setUI('m-fit-amt', formatNumber(subBase*m_fit));
+            setUI('m-gea-base', subBase + " kWh"); setUI('m-gea-amt', formatNumber(subBase*m_gea));
             setUI('m-uc-total', formatNumber(ucAmt));
 
             // 7. Taxes
@@ -329,131 +542,243 @@
             if(imp > 650) { if(imp <= 1000) eTax = (imp-650)*0.20; else eTax = (350*0.20) + (imp-1000)*0.35; }
             setUI('m-etax-base', imp + " kWh"); setUI('m-etax-amt', formatNumber(eTax));
 
-            const taxableBase = genAmt+tAmt+tDemAmt+slAmt+dAmt+dDemAmt+supplyAmt+r.supplyFix+meterAmt+r.meteringFix+awatAmt+rrAmt;
+            const taxableBase = genAmt+tAmt+tDemAmt+slAmt+dAmt+dDemAmt+supplyAmt+r.supplyFix+meterAmt+r.meteringFix+awatAmt+rrAmt+lifeAmt+scsAmt+rptAmt;
             const lftAmt = taxableBase * lft;
             setUI('m-lft-base', formatNumber(taxableBase)); setUI('m-lft-price', (lft*100).toFixed(4) + "%"); setUI('m-lft-amt', formatNumber(lftAmt));
 
             const vatGen = genAmt * r.vatGen; const vatTrans = (tAmt+tDemAmt) * r.vatTrans; const vatSl = slAmt * r.vatSl;
-            const vatOthers = (dAmt+dDemAmt+supplyAmt+r.supplyFix+meterAmt+r.meteringFix+lifeAmt+scsAmt+rptAmt+ucAmt) * r.vatOther;
+            const vatOthers = (dAmt+dDemAmt+supplyAmt+r.supplyFix+meterAmt+r.meteringFix+lifeAmt+scsAmt+rptAmt) * r.vatOther;
             const vatTotal = vatGen+vatTrans+vatSl+vatOthers;
             setUI('m-vat-amt', formatNumber(vatTotal));
             setUI('m-tax-total-cell', formatNumber(eTax+lftAmt+vatTotal));
 
             const gross = genAmt+tAmt+tDemAmt+slAmt+dAmt+dDemAmt+supplyAmt+r.supplyFix+meterAmt+r.meteringFix+awatAmt+rrAmt+lifeAmt+scsAmt+rptAmt+ucAmt+eTax+lftAmt+vatTotal;
-            const expPrice = r.gen + mExportPriceOffset;
+            const expPrice = gR + mExportPriceOffset;
             const cred = exp * expPrice;
             setUI('m-exp-base', exp + " kWh"); setUI('m-exp-price', expPrice.toFixed(4)); setUI('m-exp-amt', "- " + formatNumber(cred));
             
+            setUI('m-bal-imp', imp + " kWh"); setUI('m-bal-exp', "- " + exp + " kWh"); setUI('m-bal-rec', rec + " kWh"); setUI('m-bal-sub', subBase + " kWh");
+
             const finalDue = Math.max(0, gross-cred);
             setUI('m-total-due', "₱ " + formatNumber(finalDue));
 
              // Analytics
-            const capex = cap * (parseFloat(document.getElementById('m-roi-cost-kw').value)||0);
+            const roiCost = parseFloat(document.getElementById('m-roi-cost-kw').value)||0;
+            const capex = cap * roiCost;
             setUI('m-roi-total-capex', "₱ " + formatNumber(capex));
-            const trad = (imp+sGen) * (r.gen+3.5); // Simplified trad ref
+
+            const trad = getMeralcoStatement(totalLoad, dem); 
             const net = finalDue;
-            const ppa = imp * (r.gen+2.0) + ppaFixed;
-            setUI('m-roi-monthly-savings', "₱ " + formatNumber(trad-net));
-            setUI('m-roi-payback-val', ((capex/(trad-net))/10).toFixed(1)); // 10 instead of 12 for scaling
-            setUI('m-comp-trad', "₱ " + formatNumber(trad)); setUI('m-comp-der-exp', "₱ " + formatNumber(net)); setUI('m-comp-der-ppa', "₱ " + formatNumber(ppa));
             
-            const scores = [{id:'a', v:trad}, {id:'b', v:net}, {id:'c', v:ppa}].sort((a,b)=>a.v-b.v);
+            setUI('m-roi-monthly-savings', "₱ " + formatNumber(cred));
+            setUI('m-roi-payback-val', cred > 0 ? ((capex/(cred))/12).toFixed(1) : "0.0");
+            setUI('m-comp-trad', "₱ " + formatNumber(trad)); setUI('m-comp-der-exp', "₱ " + formatNumber(net));
+            
+            setUI('m-best-scenario-text', `Traditionally you pay ₱${formatNumber(trad)}. With Solar Net-Metering, you only pay ₱${formatNumber(net)} for regular grid use.`);
+            
+            const scores = [{id:'a', v:trad}, {id:'b', v:net}].sort((a,b)=>a.v-b.v);
             scores.forEach((s,i) => { setUI('m-rank-badge-'+s.id, 'RANK #'+(i+1)); });
+
+            // Environmental Logic
+            const annualGen = rec * 12; // Annual generation based on monthly REC
+            const co2Saved = (annualGen * 0.712) / 1000; // Tons per year
+            const treesPlanted = Math.round(co2Saved * 16.5);
+            setUI('m-env-co2', co2Saved.toFixed(2) + " MT");
+            setUI('m-env-trees', treesPlanted.toLocaleString());
         }
 
         function calculateBill() {
+            const cls = document.getElementById('coop-class').value;
             const cap = parseFloat(document.getElementById('derCapacityKWp').value)||0;
             const cf = parseFloat(document.getElementById('capacityFactor').value)||0;
             const imp = parseFloat(document.getElementById('importKwh').value)||0;
             const exp = parseFloat(document.getElementById('exportKwh').value)||0;
-            const ppaFixed = parseFloat(document.getElementById('ppa-rate').value)||0;
+            const rec = parseFloat(document.getElementById('c-rec').value)||0;
+            const subBase = imp + rec - exp;
+            const totalLoad = imp + rec - exp;
+            const dem = parseFloat(document.getElementById('c-demand').value)||0;
             const sGen = cap * 24 * 30 * (cf/100);
-            const act = imp - exp + sGen;
 
-            if(exp > sGen + 0.5) {
+            if(rec >= sGen - 1) document.getElementById('c-rec-note').classList.remove('hidden'); else document.getElementById('c-rec-note').classList.add('hidden');
+
+            if(exp > rec + 0.1) {
                 document.getElementById('c-export-warn').classList.remove('hidden');
-                setUI('sideTotal', "INVALID EXPORT");
-                setUI('footer-total', "INVALID EXPORT");
-                setUI('comp-trad', "ERR"); setUI('comp-der-exp', "ERR"); setUI('comp-der-ppa', "ERR");
+                setUI('sideTotal', "EXP > REC");
+                setUI('footer-total', "EXP > REC");
+                setUI('comp-trad', "ERR"); setUI('comp-der-exp', "ERR");
                 setUI('roi-monthly-savings', "₱ 0.00"); setUI('roi-payback-val', "ERR");
                 return; // Stop computing
             } else {
                 document.getElementById('c-export-warn').classList.add('hidden');
             }
 
-            const g = parseFloat(document.getElementById('rate-gen').value);
-            const t = parseFloat(document.getElementById('rate-trans').value);
-            const sl = parseFloat(document.getElementById('rate-sl').value);
-            const dist = parseFloat(document.getElementById('rate-dist-energy').value);
-            const sF = parseFloat(document.getElementById('rate-supply-fix').value);
-            const mF = parseFloat(document.getElementById('rate-metering-fix').value);
-            const uc = parseFloat(document.getElementById('rate-uc').value);
+            // Get live rates from inputs
+            const gR = parseFloat(document.getElementById('c-rate-gen').value)||0;
+            const tR = parseFloat(document.getElementById('c-rate-trans').value)||0;
+            const tDR = parseFloat(document.getElementById('c-rate-trans-dem').value)||0;
+            const slR = parseFloat(document.getElementById('c-rate-sl').value)||0;
+            const dR = parseFloat(document.getElementById('c-rate-dist').value)||0;
+            const dDR = parseFloat(document.getElementById('c-rate-dist-dem').value)||0;
+            const rKR = parseFloat(document.getElementById('c-rate-retail-kwh').value)||0;
+            const rFR = parseFloat(document.getElementById('c-rate-retail-fix').value)||0;
+            const mKR = parseFloat(document.getElementById('c-rate-meter-kwh').value)||0;
+            const mFR = parseFloat(document.getElementById('c-rate-meter-fix').value)||0;
+            const rvR = parseFloat(document.getElementById('c-rate-reinvest').value)||0;
+            const liR = parseFloat(document.getElementById('c-rate-life').value)||0;
+            const scR = parseFloat(document.getElementById('c-rate-scs').value)||0;
+            const r_VAT = coopRates[cls]; // Keep patterns for VAT mixed logic
 
-            const genAmt = imp * g; const hostAmt = imp * 0.0282; const transAmt = imp * t; const slAmt = imp * sl;
-            setUI('li-gen-amt', formatNumber(genAmt)); setUI('li-host-amt', formatNumber(hostAmt)); setUI('li-trans-amt', formatNumber(transAmt)); setUI('li-sl-amt', formatNumber(slAmt));
-            setUI('det-gen-trans-total', formatNumber(genAmt+hostAmt+transAmt+slAmt));
+            function getCoopStatement(kwh, demand) {
+                const subB = kwh;
+                const gA = kwh * gR; const tA = (r_VAT.transDemand ? 0 : kwh * tR); const tDA = (r_VAT.transDemand ? demand * tDR : 0); const sA = kwh * slR;
+                const dA = (r_VAT.distDemand ? 0 : kwh * dR); const dDA = (r_VAT.distDemand ? demand * dDR : 0);
+                const rKA = kwh * rKR; const mKA = kwh * mKR; const rvA = kwh * rvR;
+                const distTotal = dA+dDA+rKA+rFR+mKA+mFR+rvA;
+                const lA = subB * liR; const sA_s = subB * scR;
+                const sdA = kwh * 0.0428; const meA = kwh * 0.2763; const envA = kwh * 0.0025; const fA = subB * 0.2011; const gA_u = subB * 0.0371;
+                const ucTotal = sdA+meA+envA+fA+gA_u;
+                const vT = (kwh * (r_VAT.vatGen+r_VAT.vatTrans+r_VAT.vatSl+r_VAT.vatDist+r_VAT.vatOthers)) + r_VAT.vatFixed;
+                return gA+tA+tDA+sA+distTotal+lA+sA_s+ucTotal+vT;
+            }
 
-            const distAmt = imp * dist; setUI('li-dist-energy-amt', formatNumber(distAmt));
-            setUI('det-dist-total', formatNumber(distAmt + sF + mF));
+            // 1. Gen & Trans
+            const genAmt = imp * gR;
+            setUI('c-gen-base', imp + " kWh"); setUI('c-gen-amt', formatNumber(genAmt));
+            
+            let tAmt = 0, tDemAmt = 0;
+            if(r_VAT.transDemand) {
+                tDemAmt = dem * tDR;
+                document.getElementById('c-trans-demand-row').classList.remove('hidden');
+                setUI('c-trans-demand-base', dem + " kW"); setUI('c-trans-demand-amt', formatNumber(tDemAmt));
+            } else {
+                tAmt = imp * tR;
+                document.getElementById('c-trans-demand-row').classList.add('hidden');
+                setUI('c-trans-base', imp + " kWh"); setUI('c-trans-amt', formatNumber(tAmt));
+            }
+            const slAmt = imp * slR;
+            setUI('c-sl-base', imp + " kWh"); setUI('c-sl-amt', formatNumber(slAmt));
+            setUI('c-gen-trans-total', formatNumber(genAmt+tAmt+tDemAmt+slAmt));
 
-            const ucAmt = imp * uc; setUI('li-uc-amt', formatNumber(ucAmt));
-            const vat = (genAmt+transAmt+slAmt+distAmt) * 0.12; setUI('det-vat-total', formatNumber(vat));
-            setUI('det-subs-total', formatNumber(ucAmt + vat));
+            // 2. Distribution
+            let dAmt = 0, dDemAmt = 0;
+            if(r_VAT.distDemand) {
+                dDemAmt = dem * dDR;
+                document.getElementById('c-dist-demand-row').classList.remove('hidden');
+                setUI('c-dist-dem-base', dem + " kW"); setUI('c-dist-dem-amt', formatNumber(dDemAmt));
+            } else {
+                dAmt = imp * dR;
+                document.getElementById('c-dist-demand-row').classList.add('hidden');
+                setUI('c-dist-base', imp + " kWh"); setUI('c-dist-amt', formatNumber(dAmt));
+            }
+            
+            const rKA = imp * rKR; setUI('c-retail-kwh-base', imp + " kWh"); setUI('c-retail-kwh-amt', formatNumber(rKA));
+            setUI('c-retail-fix-amt', formatNumber(rFR));
+            const mKA = imp * mKR; setUI('c-meter-kwh-base', imp + " kWh"); setUI('c-meter-kwh-amt', formatNumber(mKA));
+            setUI('c-meter-fix-amt', formatNumber(mFR));
+            const rvA = imp * rvR; setUI('c-reinvest-base', imp + " kWh"); setUI('c-reinvest-amt', formatNumber(rvA));
+            const distTotal = dAmt+dDemAmt+rKA+rFR+mKA+mFR+rvA;
+            setUI('c-dist-total', formatNumber(distTotal));
 
-            const gross = genAmt + hostAmt+ transAmt + slAmt + distAmt + sF + mF + ucAmt + vat;
-            const cred = exp * g;
-            setUI('det-der-credit', "- " + formatNumber(cred)); setUI('li-export-price', g.toFixed(4));
+            // 3. Adj & Subsidies
+            const lifeAmt = subBase * liR; const scsAmt = subBase * scR;
+            setUI('c-life-base', subBase + " kWh"); setUI('c-life-amt', formatNumber(lifeAmt));
+            setUI('c-scs-base', subBase + " kWh"); setUI('c-scs-amt', formatNumber(scsAmt));
+            setUI('c-adj-total', formatNumber(lifeAmt+scsAmt));
+
+            // 4. Universal Charges
+            const sdR = parseFloat(document.getElementById('c-rate-uc-sd').value)||0;
+            const meR = parseFloat(document.getElementById('c-rate-uc-me').value)||0;
+            const evR = parseFloat(document.getElementById('c-rate-uc-env').value)||0;
+            const ftR = parseFloat(document.getElementById('c-rate-fit').value)||0;
+            const gaR = parseFloat(document.getElementById('c-rate-gea').value)||0;
+
+            const sdAmt = imp * sdR; const meAmt = imp * meR; const envAmt = imp * evR; const fitAmt = subBase * ftR; const geaAmt = subBase * gaR;
+            setUI('c-uc-sd-base', imp + " kWh"); setUI('c-uc-sd-amt', formatNumber(sdAmt));
+            setUI('c-uc-me-base', imp + " kWh"); setUI('c-uc-me-amt', formatNumber(meAmt));
+            setUI('c-uc-env-base', imp + " kWh"); setUI('c-uc-env-amt', formatNumber(envAmt));
+            setUI('c-fit-base', subBase + " kWh"); setUI('c-fit-amt', formatNumber(fitAmt));
+            setUI('c-gea-base', subBase + " kWh"); setUI('c-gea-amt', formatNumber(geaAmt));
+            const ucTotal = sdAmt+meAmt+envAmt+fitAmt+geaAmt;
+            setUI('c-uc-total', formatNumber(ucTotal));
+
+            // 5. Taxes
+            const vatTotal = (imp * (r_VAT.vatGen+r_VAT.vatTrans+r_VAT.vatSl+r_VAT.vatDist+r_VAT.vatOthers)) + r_VAT.vatFixed;
+            setUI('c-vat-amt', formatNumber(vatTotal)); setUI('c-tax-total', formatNumber(vatTotal));
+
+            const gross = genAmt+tAmt+tDemAmt+slAmt+distTotal+lifeAmt+scsAmt+ucTotal+vatTotal;
+            const cred = exp * gR;
+            setUI('c-exp-base', exp + " kWh"); setUI('c-exp-price', gR.toFixed(4)); setUI('c-exp-amt', "- " + formatNumber(cred));
+            
             setUI('sideTotal', "₱ " + formatNumber(Math.max(0, gross-cred)));
             setUI('footer-total', "₱ " + formatNumber(Math.max(0, gross-cred)));
             setUI('footer-gross', formatNumber(gross)); setUI('footer-export', "- " + formatNumber(cred));
-            setUI('math-actual', formatNumber(act) + " kWh");
+            setUI('c-bal-imp', imp + " kWh"); setUI('c-bal-exp', "- " + exp + " kWh"); setUI('c-bal-rec', rec + " kWh"); setUI('c-bal-sub', subBase + " kWh");
 
-            // Analytics & Ranking
-            const capex = cap * (parseFloat(document.getElementById('roi-cost-kw').value)||0);
+            // Analytics
+            const roiCost = parseFloat(document.getElementById('roi-cost-kw').value)||0;
+            const capex = cap * roiCost;
             setUI('roi-total-capex', "₱ " + formatNumber(capex));
-            const trad = (imp+sGen) * (g + t + sl + dist + uc + 0.8);
-            const net = Math.max(0, gross-cred);
-            const ppa = imp * (g+1.4) + ppaFixed;
-            setUI('roi-monthly-savings', "₱ " + formatNumber(trad-net));
-            setUI('roi-payback-val', ((capex/(trad-net))/12).toFixed(1));
-            setUI('comp-trad', "₱ " + formatNumber(trad)); setUI('comp-der-exp', "₱ " + formatNumber(net)); setUI('comp-der-ppa', "₱ " + formatNumber(ppa));
 
-            const scores = [{id:'a', v:trad}, {id:'b', v:net}, {id:'c', v:ppa}].sort((a,b)=>a.v-b.v);
+            const trad = getCoopStatement(totalLoad, dem);
+            const net = Math.max(0, gross-cred);
+
+            setUI('roi-monthly-savings', "₱ " + formatNumber(cred));
+            setUI('roi-payback-val', cred > 0 ? ((capex/(cred))/12).toFixed(1) : "0.0");
+            setUI('comp-trad', "₱ " + formatNumber(trad)); setUI('comp-der-exp', "₱ " + formatNumber(net));
+            
+            setUI('best-scenario-text', `Traditional Grid Cost (0 Solar): ₱${formatNumber(trad)}. With Net-Metering: ₱${formatNumber(net)}.`);
+
+            const scores = [{id:'a', v:trad}, {id:'b', v:net}].sort((a,b)=>a.v-b.v);
             scores.forEach((s,i) => { setUI('rank-badge-'+s.id, 'RANK #'+(i+1)); });
+
+            // Environmental Logic
+            const annualGen = rec * 12;
+            const co2Saved = (annualGen * 0.712) / 1000;
+            const treesPlanted = Math.round(co2Saved * 16.5);
+            setUI('c-env-co2', co2Saved.toFixed(2) + " MT");
+            setUI('c-env-trees', treesPlanted.toLocaleString());
         }
 
         function updateCoopMaxExport() {
             const cap = parseFloat(document.getElementById('derCapacityKWp').value)||0;
             const cf = parseFloat(document.getElementById('capacityFactor').value)||0;
-            document.getElementById('exportKwh').value = Math.floor(cap * 24 * 30 * (cf/100));
+            const gen = Math.floor(cap * 24 * 30 * (cf/100));
+            document.getElementById('exportKwh').value = Math.floor(gen * 0.88); // 88% default export
+            document.getElementById('c-rec').value = gen;
             calculateBill();
         }
 
         function updateMeralcoMaxExport() {
             const cap = parseFloat(document.getElementById('m-derCapacity').value)||0;
             const cf = parseFloat(document.getElementById('m-cf').value)||0;
-            document.getElementById('m-export').value = Math.floor(cap * 24 * 30 * (cf/100));
+            const gen = Math.floor(cap * 24 * 30 * (cf/100));
+            document.getElementById('m-export').value = Math.floor(gen * 0.88); // 88% default export
+            document.getElementById('m-rec').value = gen;
             calculateMeralcoBill();
         }
 
         function resetDefaults() {
             setUI('meralco-class', 'residential');
+            setUI('coop-class', 'residential');
             setUI('m-demand', 40);
+            setUI('c-demand', 40);
             setUI('m-derCapacity', 5);
-            setUI('m-cf', 18);
-            setUI('m-import', 1075);
-            setUI('m-lft-rate', 0.6270);
-            
             setUI('derCapacityKWp', 5);
+            setUI('m-cf', 18);
             setUI('capacityFactor', 18);
+            setUI('m-import', 1075);
             setUI('importKwh', 329);
-
+            setUI('m-lft-rate', 0.6270);
+            setUI('m-roi-cost-kw', 30000);
+            setUI('roi-cost-kw', 30000);
+            
             handleMeralcoClassChange();
+            handleCoopClassChange();
             updateCoopMaxExport();
             updateMeralcoMaxExport();
         }
 
-        window.onload = () => { handleMeralcoClassChange(); updateCoopMaxExport(); updateMeralcoMaxExport(); };
+        window.onload = () => { handleMeralcoClassChange(); handleCoopClassChange(); updateCoopMaxExport(); updateMeralcoMaxExport(); };
     </script>
 </body>
 </html>
