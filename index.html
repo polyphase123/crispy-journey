@@ -57,11 +57,14 @@
                     <div class="space-y-3">
                         <div class="input-group"><label>Customer Class</label><select id="meralco-class" onchange="handleMeralcoClassChange()"><option value="residential">Residential</option><option value="gs-a">General Service A</option><option value="gs-b">General Service B</option><option value="gp-secondary">GP Secondary</option><option value="gp-13kv">GP 13.8 KV</option><option value="gp-34kv">GP 34.5 KV</option></select></div>
                         <div class="input-group hidden" id="m-demand-group"><label>Billed Demand (kW)</label><input type="number" id="m-demand" value="40" oninput="calculateMeralcoBill()"></div>
+                        <div class="input-group hidden" id="m-gmbd-group"><label>GMBD (kW)<span class="ml-1 text-[8px] opacity-70">(Guaranteed Min. Billing Demand)</span></label><input type="number" id="m-gmbd" value="5" oninput="calculateMeralcoBill()"></div>
                         <div class="input-group"><label>Solar PV Capacity (kWp)</label><input type="number" id="m-derCapacity" value="5" step="0.1" oninput="updateMeralcoMaxExport()"></div>
                         <div class="input-group"><label>Solar Capacity Factor (%)</label><input type="number" id="m-cf" value="18" step="0.1" oninput="updateMeralcoMaxExport()"></div>
                         <div class="input-group"><label>Grid Import (kWh)</label><input type="number" id="m-import" value="1075" oninput="calculateMeralcoBill()"></div>
                         <div class="input-group"><label>Solar Export (kWh)</label><input type="number" id="m-export" value="431" oninput="calculateMeralcoBill()"><p id="m-export-warn" class="text-[9px] text-red-500 font-bold mt-1 hidden">⚠️ Exceeds REC Meter!</p></div>
-                        <div class="input-group"><label>REC Meter (Total Gen.) (kWh)</label><input type="number" id="m-rec" value="489" oninput="calculateMeralcoBill()"><p id="m-rec-note" class="text-[9px] text-blue-600 font-bold mt-1 hidden">✨ Theoretical Maximum Generation</p></div>
+                        <div class="input-group"><label>REC Meter (Total Gen.) (kWh)</label><input type="number" id="m-rec" value="489" oninput="calculateMeralcoBill()"><p id="m-rec-note" class="text-[9px] text-blue-600 font-bold mt-1 hidden">✨ Theoretical Maximum Generation</p>
+                            <p class="text-[8px] text-slate-500 mt-2 italic">Note: NM Credit Rate (₱/kWh) is the previous month's Generation Charge (~+/- ₱0.10 of current).</p>
+                        </div>
                         <div class="input-group"><label>LGU Franchise Tax (%)</label><input type="number" id="m-lft-rate" value="0.6270" step="0.0001" oninput="calculateMeralcoBill()"></div>
                     </div>
                 </div>
@@ -121,7 +124,7 @@
                             <tr><td class="pl-4">Energy Tax (Tiered)</td><td id="m-etax-base">--</td><td id="m-etax-price">Tiered</td><td id="m-etax-amt">0.00</td></tr>
                             <tr><td class="pl-4">Value Added Tax</td><td colspan="2">Mixed Rates</td><td id="m-vat-amt">0.00</td></tr>
                             <tr><td class="pl-4">Local Franchise Tax</td><td id="m-lft-base">--</td><td id="m-lft-price">--</td><td id="m-lft-amt">0.00</td></tr>
-                            <tr class="export-row-standard"><td class="p-2 font-black uppercase">Net-Metering Credits</td><td id="m-exp-base">--</td><td id="m-exp-price">--</td><td id="m-exp-amt">0.00</td></tr>
+                            <tr class="export-row-standard"><td class="p-2 font-black uppercase">Net-Metering Credits <span class="block text-[7px] font-medium opacity-70 normal-case">(Prev. Month Gen. Charge)</span></td><td id="m-exp-base">--</td><td><input type="number" id="m-rate-exp" value="8.3864" step="0.0001" class="table-input" oninput="calculateMeralcoBill()"></td><td id="m-exp-amt">0.00</td></tr>
                         </tbody></table>
                     </div>
                 </div>
@@ -311,7 +314,7 @@
     <script>
         const formatNumber = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         const setUI = (id, text) => { const el = document.getElementById(id); if (el) { if (el.tagName === 'INPUT') el.value = text; else el.innerText = text; } };
-        const mExportPriceOffset = 0.12;
+        const mExportPriceOffset = 0.00; // NM Credit Rate within 0.10 of current Generation Charge
 
         function getAmortization(principal, ratePerYear, years) {
             if(principal <= 0) return 0;
@@ -346,10 +349,10 @@
         const meralcoRates = {
             residential: { gen: 8.3864, trans: 1.4567, sl: 0.7752, dist: [{max:200,rate:0.9803},{max:300,rate:1.2908},{max:400,rate:1.5837},{max:Infinity,rate:2.0941}], supplyKwh: 0.4979, supplyFix: 16.38, meteringKwh: 0.3350, meteringFix: 5.0, vatGen: 0.1105, vatTrans: 0.11, vatSl: 0.1104, vatOther: 0.12, hasDemand: false },
             'gs-a': { gen: 8.3864, trans: 1.4567, sl: 0.7752, dist: 0.7313, supplyKwh: 0.4979, supplyFix: 16.38, meteringKwh: 0.3350, meteringFix: 5.0, vatGen: 0.1105, vatTrans: 0.11, vatSl: 0.1104, vatOther: 0.12, hasDemand: false },
-            'gs-b': { gen: 8.3864, transDemand: 459.8, sl: 0.7752, distKwh: 0.1339, distDemand: 232.2, supplyKwh: 0, supplyFix: 363.73, meteringKwh: 0, meteringFix: 354.78, vatGen: 0.1105, vatTrans: 0.11, vatSl: 0.1104, vatOther: 0.12, hasDemand: true },
-            'gp-secondary': { gen: 8.3864, transDemand: 481.48, sl: 0.7752, distKwh: 0.1339, distDemand: 232.2, supplyKwh: 0, supplyFix: 827.54, meteringKwh: 0, meteringFix: 831.72, vatGen: 0.1105, vatTrans: 0.11, vatSl: 0.1104, vatOther: 0.12, hasDemand: true },
-            'gp-13kv': { gen: 8.3864, transDemand: 503.48, sl: 0.3091, distKwh: 0.0502, distDemand: 178.85, supplyKwh: 0, supplyFix: 827.54, meteringKwh: 0, meteringFix: 831.72, vatGen: 0.1105, vatTrans: 0.11, vatSl: 0.1104, vatOther: 0.12, hasDemand: true },
-            'gp-34kv': { gen: 8.3864, transDemand: 548.27, sl: 0.3091, distKwh: 0.0502, distDemand: 178.85, supplyKwh: 0, supplyFix: 827.54, meteringKwh: 0, meteringFix: 831.72, vatGen: 0.1105, vatTrans: 0.11, vatSl: 0.1104, vatOther: 0.12, hasDemand: true }
+            'gs-b': { gen: 8.3864, transDemand: 459.8, sl: 0.7752, distKwh: 0.1339, distDemand: 232.2, supplyKwh: 0, supplyFix: 363.73, meteringKwh: 0, meteringFix: 354.78, vatGen: 0.1105, vatTrans: 0.11, vatSl: 0.1104, vatOther: 0.12, hasDemand: true, gmbd: 5 },
+            'gp-secondary': { gen: 8.3864, transDemand: 481.48, sl: 0.7752, distKwh: 0.1339, distDemand: 232.2, supplyKwh: 0, supplyFix: 827.54, meteringKwh: 0, meteringFix: 831.72, vatGen: 0.1105, vatTrans: 0.11, vatSl: 0.1104, vatOther: 0.12, hasDemand: true, gmbd: 40 },
+            'gp-13kv': { gen: 8.3864, transDemand: 503.48, sl: 0.3091, distKwh: 0.0502, distDemand: 178.85, supplyKwh: 0, supplyFix: 827.54, meteringKwh: 0, meteringFix: 831.72, vatGen: 0.1105, vatTrans: 0.11, vatSl: 0.1104, vatOther: 0.12, hasDemand: true, gmbd: 40 },
+            'gp-34kv': { gen: 8.3864, transDemand: 548.27, sl: 0.3091, distKwh: 0.0502, distDemand: 178.85, supplyKwh: 0, supplyFix: 827.54, meteringKwh: 0, meteringFix: 831.72, vatGen: 0.1105, vatTrans: 0.11, vatSl: 0.1104, vatOther: 0.12, hasDemand: true, gmbd: 40 }
         };
 
         const coopRates = {
@@ -380,7 +383,14 @@
             const m = document.getElementById('meralco-class').value;
             const r = meralcoRates[m];
             document.getElementById('m-demand-group').classList.toggle('hidden', !r.hasDemand);
+            document.getElementById('m-gmbd-group').classList.toggle('hidden', !r.hasDemand);
+            
+            if(r.hasDemand) {
+                setUI('m-gmbd', r.gmbd || 0);
+            }
+            
             setUI('m-rate-gen', r.gen);
+            setUI('m-rate-exp', r.gen + mExportPriceOffset);
             setUI('m-rate-sl', r.sl);
             
             // Adjust labels/display for Demand vs Energy
@@ -421,7 +431,10 @@
             const subBase = imp + rec - exp;
             const totalLoad = imp + rec - exp;
 
-            const dem = parseFloat(document.getElementById('m-demand').value)||0;
+            const rawDem = parseFloat(document.getElementById('m-demand').value)||0;
+            const gmbd = parseFloat(document.getElementById('m-gmbd').value)||0;
+            const dem = Math.max(rawDem, gmbd);
+            
             const lft = (parseFloat(document.getElementById('m-lft-rate').value)||0)/100;
             const sGen = cap * 24 * 30 * (cf/100);
 
@@ -553,9 +566,9 @@
             setUI('m-tax-total-cell', formatNumber(eTax+lftAmt+vatTotal));
 
             const gross = genAmt+tAmt+tDemAmt+slAmt+dAmt+dDemAmt+supplyAmt+r.supplyFix+meterAmt+r.meteringFix+awatAmt+rrAmt+lifeAmt+scsAmt+rptAmt+ucAmt+eTax+lftAmt+vatTotal;
-            const expPrice = gR + mExportPriceOffset;
+            const expPrice = parseFloat(document.getElementById('m-rate-exp').value) || gR;
             const cred = exp * expPrice;
-            setUI('m-exp-base', exp + " kWh"); setUI('m-exp-price', expPrice.toFixed(4)); setUI('m-exp-amt', "- " + formatNumber(cred));
+            setUI('m-exp-base', exp + " kWh"); setUI('m-exp-amt', "- " + formatNumber(cred));
             
             setUI('m-bal-imp', imp + " kWh"); setUI('m-bal-exp', "- " + exp + " kWh"); setUI('m-bal-rec', rec + " kWh"); setUI('m-bal-sub', subBase + " kWh");
 
@@ -761,6 +774,8 @@
             setUI('meralco-class', 'residential');
             setUI('coop-class', 'residential');
             setUI('m-demand', 40);
+            setUI('m-gmbd', 40);
+            setUI('m-rate-exp', 8.3864);
             setUI('c-demand', 40);
             setUI('m-derCapacity', 5);
             setUI('derCapacityKWp', 5);
