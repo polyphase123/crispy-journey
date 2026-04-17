@@ -58,7 +58,7 @@
                         <div class="input-group"><label>Customer Class</label><select id="meralco-class" onchange="handleMeralcoClassChange()"><option value="residential">Residential</option><option value="gs-a">General Service A</option><option value="gs-b">General Service B</option><option value="gp-secondary">GP Secondary</option><option value="gp-13kv">GP 13.8 KV</option><option value="gp-34kv">GP 34.5 KV</option></select></div>
                         <div class="input-group hidden" id="m-demand-group"><label>Billed Demand (kW)</label><input type="number" id="m-demand" value="40" oninput="calculateMeralcoBill()"></div>
                         <div class="input-group hidden" id="m-gmbd-group"><label>GMBD (kW)<span class="ml-1 text-[8px] opacity-70">(Guaranteed Min. Billing Demand)</span></label><input type="number" id="m-gmbd" value="5" oninput="calculateMeralcoBill()"></div>
-                        <div class="input-group"><label>Solar PV Capacity (kWp)</label><input type="number" id="m-derCapacity" value="5" step="0.1" oninput="updateMeralcoMaxExport()"></div>
+                        <div class="input-group"><label>Solar PV Capacity (kWp)</label><input type="number" id="m-derCapacity" value="5" step="0.1" max="100" oninput="updateMeralcoMaxExport()"></div>
                         <div class="input-group"><label>Solar Capacity Factor (%)</label><input type="number" id="m-cf" value="18" step="0.1" oninput="updateMeralcoMaxExport()"></div>
                         <div class="input-group"><label>Grid Import (kWh)</label><input type="number" id="m-import" value="1075" oninput="calculateMeralcoBill()"></div>
                         <div class="input-group"><label>Solar Export (kWh)</label><input type="number" id="m-export" value="431" oninput="calculateMeralcoBill()"><p id="m-export-warn" class="text-[9px] text-red-500 font-bold mt-1 hidden">⚠️ Exceeds REC Meter!</p></div>
@@ -195,7 +195,7 @@
                 <div class="card p-5 bg-orange-50/50 border-orange-100"><h2 class="text-[10px] font-black text-orange-900 mb-4 uppercase tracking-widest text-center">BATELEC II PARAMETERS</h2><div class="space-y-3">
                     <div class="input-group"><label>Customer Class</label><select id="coop-class" onchange="handleCoopClassChange()"><option value="residential">Residential</option><option value="low-voltage">Low Voltage Connection</option><option value="higher-voltage">Higher Voltage Connection</option></select></div>
                     <div class="input-group hidden" id="c-demand-group"><label>Billed Demand (kW)</label><input type="number" id="c-demand" value="40" oninput="calculateBill()"></div>
-                    <div class="input-group"><label>Solar PV Capacity (kWp)</label><input type="number" id="derCapacityKWp" value="5" oninput="updateCoopMaxExport()"></div>
+                    <div class="input-group"><label>Solar PV Capacity (kWp)</label><input type="number" id="derCapacityKWp" value="5" max="100" oninput="updateCoopMaxExport()"></div>
                     <div class="input-group"><label>Solar Capacity Factor (%)</label><input type="number" id="capacityFactor" value="18" step="0.1" oninput="updateCoopMaxExport()"></div>
                     <div class="input-group"><label>Grid Import (kWh)</label><input type="number" id="importKwh" value="329" oninput="calculateBill()"></div>
                     <div class="input-group"><label>Solar Export (kWh)</label><input type="number" id="exportKwh" value="731" oninput="calculateBill()"><p id="c-export-warn" class="text-[9px] text-red-500 font-bold mt-1 hidden">⚠️ Exceeds REC Meter!</p></div>
@@ -753,7 +753,8 @@
         }
 
         function updateCoopMaxExport() {
-            const cap = parseFloat(document.getElementById('derCapacityKWp').value)||0;
+            let cap = parseFloat(document.getElementById('derCapacityKWp').value)||0;
+            if (cap > 100) { cap = 100; document.getElementById('derCapacityKWp').value = 100; }
             const cf = parseFloat(document.getElementById('capacityFactor').value)||0;
             const gen = Math.floor(cap * 24 * 30 * (cf/100));
             document.getElementById('exportKwh').value = Math.floor(gen * 0.88); // 88% default export
@@ -762,7 +763,8 @@
         }
 
         function updateMeralcoMaxExport() {
-            const cap = parseFloat(document.getElementById('m-derCapacity').value)||0;
+            let cap = parseFloat(document.getElementById('m-derCapacity').value)||0;
+            if (cap > 100) { cap = 100; document.getElementById('m-derCapacity').value = 100; }
             const cf = parseFloat(document.getElementById('m-cf').value)||0;
             const gen = Math.floor(cap * 24 * 30 * (cf/100));
             document.getElementById('m-export').value = Math.floor(gen * 0.88); // 88% default export
